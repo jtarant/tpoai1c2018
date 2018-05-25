@@ -1,17 +1,17 @@
 package vista;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 public class UsuarioView {
 		private String idUsuario;
 		private String password;
 		private String nombre;
 		private String apellido;
-		private Timestamp fechaNac;
+		private Date fechaNac;
 		private String email;
 		private Boolean activo;
 		
-		public UsuarioView(String id, String pwd, String n, String a, Timestamp fn, String e, Boolean s)
+		public UsuarioView(String id, String pwd, String n, String a, Date fn, String e, Boolean s)
 		{
 			idUsuario = id;
 			password = pwd;
@@ -38,7 +38,7 @@ public class UsuarioView {
 		{
 			return apellido;
 		}
-		public Timestamp getFechaNac()
+		public Date getFechaNac()
 		{
 			return fechaNac;
 		}

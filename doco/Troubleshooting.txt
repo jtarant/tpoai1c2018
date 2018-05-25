@@ -1,0 +1,3 @@
+SQL Server usa el puerto 1433
+-abrir en firewall: wf.msc, agregar regla, inbound, TCP 1433
+-verificar que la instancia tenga habilitado el uso de TCP en el SQL Configuration Manager: C:\Windows\SysWOW64\SQLServerManager11.msc

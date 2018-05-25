@@ -1,18 +1,27 @@
-package ui;
+package vista;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
+
+import controlador.AdminUsuarios;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JFormattedTextField;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.Timestamp;
+import java.awt.event.ActionEvent;
 
 public class DatosUsuario extends JFrame {
 
@@ -21,7 +30,8 @@ public class DatosUsuario extends JFrame {
 	private JPasswordField pwdPassword;
 	private JTextField txtNombre;
 	private JTextField txtApellido;
-	private JTextField textField;
+	private JFormattedTextField mskFNac;
+	private JTextField txtEmail;
 
 	/**
 	 * Launch the application.
@@ -43,9 +53,8 @@ public class DatosUsuario extends JFrame {
 	 * Create the frame.
 	 */
 	public DatosUsuario() {
-		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 467, 312);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -90,7 +99,11 @@ public class DatosUsuario extends JFrame {
 		lblFechaNacimiento.setBounds(10, 149, 121, 14);
 		contentPane.add(lblFechaNacimiento);
 		
-		JFormattedTextField mskFNac = new JFormattedTextField();
+		try {
+			mskFNac = new JFormattedTextField(new MaskFormatter("##/##/####"));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
 		mskFNac.setBounds(141, 146, 86, 20);
 		contentPane.add(mskFNac);
 		
@@ -98,27 +111,75 @@ public class DatosUsuario extends JFrame {
 		lblEmail.setBounds(10, 189, 46, 14);
 		contentPane.add(lblEmail);
 		
-		textField = new JTextField();
-		textField.setBounds(141, 186, 198, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		txtEmail = new JTextField();
+		txtEmail.setBounds(141, 186, 198, 20);
+		contentPane.add(txtEmail);
+		txtEmail.setColumns(10);
 		
 		JButton btnAceptar = new JButton("Aceptar");
+		btnAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String msgErrorValidaciones = getValidacionesFallidas();
+				if (msgErrorValidaciones.length() > 0)
+					JOptionPane.showMessageDialog(null, msgErrorValidaciones);
+				else
+				{
+					try
+					{
+						AdminUsuarios.getInstancia().Crear(
+							txtIDUsuario.getText(), 
+							pwdPassword.getPassword().toString(), 
+							txtNombre.getText(), 
+							txtApellido.getText(),
+							new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
+							txtEmail.getText()
+							);
+						setVisible(false);
+						dispose();						
+					}
+					catch (Exception e)
+					{
+						JOptionPane.showMessageDialog(null, "Error al guardar los cambios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
+		
 		btnAceptar.setBounds(243, 237, 89, 23);
 		contentPane.add(btnAceptar);
 		
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
+				dispose();
+			}
+		});
 		btnCancelar.setBounds(342, 237, 89, 23);
 		contentPane.add(btnCancelar);
+		this.LimpiarCampos();
+	}
+
+	private String getValidacionesFallidas()
+	{
+		StringBuilder msgError = new StringBuilder("");
 		
-		
-		
-		try {
-			MaskFormatter dateMask = new MaskFormatter("##/##/####");
-			dateMask.install(mskFNac);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (txtIDUsuario.getText().trim().length() == 0) msgError.append("* Debe ingresar un nombre (ID) de usuario.\n");
+		if (pwdPassword.getPassword().length == 0) msgError.append("* Debe ingesar una contraseña\n");
+		if (txtNombre.getText().trim().length() == 0) msgError.append("* Debe ingresar el nombre del usuario.\n");
+		if (txtApellido.getText().trim().length() == 0) msgError.append("* Debe ingresar el apellido del usuario.\n");
+		if (mskFNac.getText().trim().length() == 0) msgError.append("* Debe ingresar la fecha de nacimiento.\n");
+		if (txtEmail.getText().trim().length() == 0) msgError.append("* Debe ingresar la direccion de email.\n");
+		return msgError.toString();
+	}
+	
+	private void LimpiarCampos()
+	{
+		txtIDUsuario.setText("");
+		pwdPassword.setText("");
+		txtNombre.setText("");
+		txtApellido.setText("");
+		mskFNac.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+		txtEmail.setText("");
 	}
 }

@@ -1,6 +1,6 @@
 package modelo;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import persistencia.AdmPersistenciaUsuarios;
 
@@ -9,11 +9,11 @@ public class Usuario {
 	private String password;
 	private String nombre;
 	private String apellido;
-	private Timestamp fechaNac;
+	private Date fechaNac;
 	private String email;
 	private Boolean activo;
 	
-	public Usuario(String idUsuario, String password, String nombre, String apellido, Timestamp fechaNac, String email)
+	public Usuario(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
 	{
 		this.setIdUsuario(idUsuario);
 		this.setPassword(password);
@@ -25,7 +25,7 @@ public class Usuario {
 		AdmPersistenciaUsuarios.getInstancia().Insertar(this);
 	}
 	
-	public Usuario(String idUsuario, String password, String nombre, String apellido, Timestamp fechaNac, String email, Boolean activo)
+	public Usuario(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email, Boolean activo)
 	{
 		this.setIdUsuario(idUsuario);
 		this.setPassword(password);
@@ -52,7 +52,7 @@ public class Usuario {
 	{
 		apellido = a.toUpperCase();
 	}
-	public void setFechaNac(Timestamp d)
+	public void setFechaNac(Date d)
 	{
 		fechaNac = d;
 	}
@@ -80,7 +80,7 @@ public class Usuario {
 	{
 		return apellido;
 	}
-	public Timestamp getFechaNac()
+	public Date getFechaNac()
 	{
 		return fechaNac;
 	}

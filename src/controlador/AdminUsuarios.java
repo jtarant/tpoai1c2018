@@ -1,9 +1,10 @@
 package controlador;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import modelo.Usuario;
+import persistencia.AdmPersistenciaUsuarios;
 
 public class AdminUsuarios {
 	private static AdminUsuarios instancia;
@@ -21,9 +22,40 @@ public class AdminUsuarios {
 		return instancia;
 	}
 	
-	public void Crear(String idUsuario, String password, String nombre, String apellido, Timestamp fechaNac, String email)
+	public void Crear(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
 	{
-		Usuario nuevoUsr = new Usuario(idUsuario, password, nombre, apellido, fechaNac, email);
-		usuarios.add(nuevoUsr);
+		try
+		{
+			Usuario nuevoUsr = new Usuario(idUsuario, password, nombre, apellido, fechaNac, email);
+			usuarios.add(nuevoUsr);
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}
+	}
+	
+	public Usuario Buscar(String idUsuario) throws Exception
+	{
+		for (Usuario usr: usuarios)
+		{
+			if (usr.getIdUsuario()==idUsuario.trim().toLowerCase())
+				return usr;
+		}
+		return AdmPersistenciaUsuarios.getInstancia().Buscar(idUsuario);
+	}
+	
+	public Usuario AutenticarUsuario(String idUsuario, String password) throws Exception
+	{
+		Usuario usr = this.Buscar(idUsuario);
+		if (usr != null)
+		{
+			if (usr.getPassword()==password)
+			{
+				return usr;
+			}
+			else return null;
+		}
+		else return null;
 	}
 }

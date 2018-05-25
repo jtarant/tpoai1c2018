@@ -20,14 +20,15 @@ public class PoolConexiones
 	private PoolConexiones()
 	{
 		getConfiguration();
+		// Abre n conexiones y las mete en el pool (array)
 		for (int i= 0; i< cantCon;i++)
-			connections.add(connect());
+			connections.add(this.connect());
 	}
 	
-	public static PoolConexiones getPoolConnection()
+	public static PoolConexiones getConexion()
 	{
 		if (pool== null)
-			pool =new PoolConexiones();
+			pool = new PoolConexiones();
 		return pool;
 	}
 	
@@ -37,34 +38,28 @@ public class PoolConexiones
 		{
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             String dbConnectString = jdbc + servidor; 
-            Connection con = DriverManager.getConnection (dbConnectString, usuario, password);
+            Connection con = DriverManager.getConnection(dbConnectString, usuario, password);
             return con;
 		}
 		catch (SQLException e)
 		{
 			System.out.println("Mensaje Error: " + e.getMessage());
-			System.out.println("Stack Trace: " + e.getStackTrace());
 			return null;
 		}
 		catch (Exception ex)
 		{
 			System.out.println("Mensaje Error: " + ex.getMessage());
-			System.out.println("Stack Trace: " + ex.getStackTrace());
 			return null;
 		}
 	}
 	
 	public void getConfiguration()
 	{
-		String configuracion = "ConfigBD.txt";
-	    Properties propiedades;
-	  
+	    Properties propiedades;	  
 	    try 
 	    {
-	       FileInputStream f = new FileInputStream(configuracion);	 
 	       propiedades = new Properties();
-	       propiedades.load(f);
-	       f.close();
+	       propiedades.load(getClass().getClassLoader().getResourceAsStream("ConfigDB.txt"));
 	 
 	       jdbc = propiedades.getProperty("jdbc"); 
 	       servidor = propiedades.getProperty("servidor");
@@ -75,12 +70,12 @@ public class PoolConexiones
 	    catch (Exception e) 
 	     {
 				System.out.println("Mensaje Error: " + e.getMessage());
-				System.out.println("Stack Trace: " + e.getStackTrace());
 	     }
 	}
 	
 	public void closeConnections()
 	{
+		// cierra todas las conexiones
 		for (int i=0; i<connections.size();i++)
 		{
 			try
@@ -90,7 +85,6 @@ public class PoolConexiones
 			catch(Exception e)
 			{
 				System.out.println("Mensaje Error: " + e.getMessage());
-				System.out.println("Stack Trace: " + e.getStackTrace());
 			}
 		}
 	}
@@ -98,18 +92,20 @@ public class PoolConexiones
 	public  Connection getConnection()
 	{
 		Connection c = null;
-		if (connections.size()>0)
+		// Cuando piden conexion, devuelvo una del pool (y la quito del array)
+		if (connections.size() > 0)
 			c = connections.remove(0);
 		else
 		{
 			c = connect();
-			System.out.println("Se ha creado una nueva conexion fuera de los parametros de configuracion");
+			System.out.println("Se acabaron las conexiones disponibles en el pool. Se creo conexion fuera del pool.");
 		}
 		return c;
 	}
 	
 	public void realeaseConnection(Connection c)
 	{
+		// Devuelve la conexion al pool (array) para reutilizarla. No se cierra.
 		connections.add(c);
 	}
 }
