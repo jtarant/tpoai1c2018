@@ -2,6 +2,7 @@ package modelo;
 
 import java.util.Date;
 
+import controlador.UsuarioIDNombreView;
 import persistencia.AdmPersistenciaUsuarios;
 
 public class Usuario {
@@ -42,7 +43,7 @@ public class Usuario {
 	}
 	public void setPassword(String pwd)
 	{
-		password = pwd.trim();
+		if (pwd != null) password = pwd.trim();
 	}
 	public void setNombre(String n)
 	{
@@ -58,7 +59,7 @@ public class Usuario {
 	}
 	public void setEmail(String e)
 	{
-		email = e.trim().toLowerCase();
+		if (e != null) email = e.trim().toLowerCase();
 	}
 	public void setActivo(Boolean a)
 	{
@@ -66,7 +67,7 @@ public class Usuario {
 	}
 	public String getIdUsuario()
 	{
-		return idUsuario;
+		return idUsuario.trim().toLowerCase();
 	}
 	public String getPassword()
 	{
@@ -91,5 +92,13 @@ public class Usuario {
 	public Boolean getActivo()
 	{
 		return activo;
+	}
+	public UsuarioIDNombreView getIDNombreView()
+	{
+		return new UsuarioIDNombreView(getIdUsuario(),getNombre(),getApellido());
+	}
+	public void actualizar() throws Exception 
+	{
+		AdmPersistenciaUsuarios.getInstancia().Modificar(this);
 	}
 }

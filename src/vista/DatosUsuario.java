@@ -1,17 +1,16 @@
 package vista;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
 import controlador.AdminUsuarios;
+import modelo.Usuario;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,11 +18,12 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JFormattedTextField;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
 import java.awt.event.ActionEvent;
 
-public class DatosUsuario extends JFrame {
+public class DatosUsuario extends JDialog {
 
 	private JPanel contentPane;
 	private JTextField txtIDUsuario;
@@ -32,6 +32,8 @@ public class DatosUsuario extends JFrame {
 	private JTextField txtApellido;
 	private JFormattedTextField mskFNac;
 	private JTextField txtEmail;
+	private Boolean modoEdicion;
+	private Boolean cancelado;
 
 	/**
 	 * Launch the application.
@@ -53,7 +55,10 @@ public class DatosUsuario extends JFrame {
 	 * Create the frame.
 	 */
 	public DatosUsuario() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setModal(true);
+		setResizable(false);
+		setTitle("Crear usuario");
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 467, 312);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -118,7 +123,8 @@ public class DatosUsuario extends JFrame {
 		
 		JButton btnAceptar = new JButton("Aceptar");
 		btnAceptar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0) 
+			{
 				String msgErrorValidaciones = getValidacionesFallidas();
 				if (msgErrorValidaciones.length() > 0)
 					JOptionPane.showMessageDialog(null, msgErrorValidaciones);
@@ -126,16 +132,28 @@ public class DatosUsuario extends JFrame {
 				{
 					try
 					{
-						AdminUsuarios.getInstancia().Crear(
-							txtIDUsuario.getText(), 
-							pwdPassword.getPassword().toString(), 
-							txtNombre.getText(), 
-							txtApellido.getText(),
-							new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
-							txtEmail.getText()
-							);
+						if (!modoEdicion)
+						{
+							AdminUsuarios.getInstancia().Crear(
+								txtIDUsuario.getText(), 
+								pwdPassword.getPassword().toString(), 
+								txtNombre.getText(), 
+								txtApellido.getText(),
+								new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
+								txtEmail.getText()
+								);
+						}
+						else
+						{
+							Usuario usr = AdminUsuarios.getInstancia().Buscar(txtIDUsuario.getText());
+							usr.setPassword(pwdPassword.getPassword().toString());
+							usr.setNombre(txtNombre.getText());
+							usr.setApellido(txtApellido.getText());
+							usr.setFechaNac(new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()));
+							usr.setEmail(txtEmail.getText());
+							usr.actualizar();							
+						}						
 						setVisible(false);
-						dispose();						
 					}
 					catch (Exception e)
 					{
@@ -150,14 +168,48 @@ public class DatosUsuario extends JFrame {
 		
 		JButton btnCancelar = new JButton("Cancelar");
 		btnCancelar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				cancelado = true;
 				setVisible(false);
-				dispose();
 			}
 		});
 		btnCancelar.setBounds(342, 237, 89, 23);
 		contentPane.add(btnCancelar);
 		this.LimpiarCampos();
+		cancelado = false;
+	}
+	
+	public void setIdUsuario(String usrId)
+	{
+		txtIDUsuario.setText(usrId);
+		txtIDUsuario.setEnabled(false);
+		this.setTitle("Modificar Usuario");
+		modoEdicion = true;
+	}
+	public void setPassword(String pwd)
+	{
+		pwdPassword.setText(pwd);
+	}
+	public void setNombre(String n)
+	{
+		txtNombre.setText(n);
+	}
+	public void setApellido(String a)
+	{
+		txtApellido.setText(a);
+	}
+	public void setFNac(Date fn)
+	{
+		mskFNac.setText(new SimpleDateFormat("dd/MM/yyyy").format(fn));
+	}
+	public void setEmail(String e)
+	{
+		txtEmail.setText(e);
+	}
+	public Boolean getCancelado()
+	{
+		return cancelado;
 	}
 
 	private String getValidacionesFallidas()
