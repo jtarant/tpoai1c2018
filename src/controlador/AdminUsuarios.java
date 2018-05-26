@@ -55,6 +55,20 @@ public class AdminUsuarios {
 		}
 	}
 	
+	public void eliminar(String idUsuario) throws Exception 
+	{
+		try 
+		{
+			Usuario usr = buscar(idUsuario);
+			usr.eliminar();
+			usuarios.remove(idUsuario);
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}		
+	}
+	
 	private Usuario buscar(String idUsuario) throws Exception
 	{
 		String id = idUsuario.trim().toLowerCase();

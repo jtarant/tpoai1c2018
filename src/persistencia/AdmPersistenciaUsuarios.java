@@ -3,6 +3,8 @@ package persistencia;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -133,6 +135,40 @@ public class AdmPersistenciaUsuarios {
 			cmdSql.setBoolean(6, usr.getActivo());
 			cmdSql.setString(7, usr.getIdUsuario());		
 			cmdSql.execute();
+			PoolConexiones.getConexion().realeaseConnection(cnx);
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+		}
+	}
+
+	public void eliminar(Usuario usr) throws Exception 
+	{
+		Connection cnx = null;
+		try
+		{
+			cnx = PoolConexiones.getConexion().getConnection();
+			PreparedStatement cmdSql;
+			try 
+			{
+				// Intento eliminar fisicamente
+				cmdSql = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE IdUsuario=?");
+				cmdSql.setString(1, usr.getIdUsuario());
+				cmdSql.execute();
+			}
+			catch (SQLIntegrityConstraintViolationException se)
+			{
+				// Si no puedo, es porque esta en uso, hago eliminacion logica
+				cmdSql = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.USUARIOS SET Activo=0 WHERE IdUsuario=?");
+				cmdSql.setString(1, usr.getIdUsuario());
+				cmdSql.execute();
+			}
 			PoolConexiones.getConexion().realeaseConnection(cnx);
 		}
 		catch (Exception e)

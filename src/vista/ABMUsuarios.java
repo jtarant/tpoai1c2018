@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import controlador.AdminUsuarios;
 import controlador.UsuarioIdNombreView;
@@ -20,6 +21,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JScrollPane;
+import java.awt.Component;
 
 public class ABMUsuarios extends JFrame {
 
@@ -46,19 +49,22 @@ public class ABMUsuarios extends JFrame {
 	 * Create the frame.
 	 */
 	public ABMUsuarios() {
+		setTitle("Administracion de Usuarios");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 477, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
+	
 		table = new JTable();
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setBounds(10, 11, 346, 239);
+		table.setBounds(10, 15, 346, 239);
 		table.setDefaultEditor(Object.class, null);
+		table.setAutoscrolls(true);
 		contentPane.add(table);
-		
+
 		JButton btnAgregar = new JButton("Agregar");
 		btnAgregar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -114,10 +120,42 @@ public class ABMUsuarios extends JFrame {
 		btnCerrar.setBounds(366, 227, 89, 23);
 		contentPane.add(btnCerrar);
 		
+		JButton btnEliminar = new JButton("Eliminar");
+		btnEliminar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try 
+				{
+					int opcion = JOptionPane.showConfirmDialog(null, "Seguro que queres eliminar el usuario?", "Eliminar usuario", JOptionPane.YES_NO_OPTION);
+					if (opcion == JOptionPane.YES_OPTION)
+					{
+						AdminUsuarios.getInstancia().eliminar(table.getValueAt(table.getSelectedRow(), 0).toString());
+						LlenarGrilla();	
+					}
+				} 
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+		btnEliminar.setEnabled(false);
+		btnEliminar.setBounds(366, 79, 89, 23);
+		contentPane.add(btnEliminar);
+				
 		this.LlenarGrilla();
+		
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
-				btnModificar.setEnabled(true);
+				if (table.getSelectedRow() != -1)
+				{
+					btnModificar.setEnabled(true);
+					btnEliminar.setEnabled(true);
+				}
+				else
+				{
+					btnModificar.setEnabled(false);
+					btnEliminar.setEnabled(false);
+				}
 			}
 		});		
 	}

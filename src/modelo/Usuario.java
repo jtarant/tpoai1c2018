@@ -106,4 +106,9 @@ public class Usuario {
 	{
 		AdmPersistenciaUsuarios.getInstancia().modificar(this);
 	}
+	public void eliminar() throws Exception 
+	{
+		this.setActivo(false);
+		AdmPersistenciaUsuarios.getInstancia().eliminar(this);
+	}
 }
