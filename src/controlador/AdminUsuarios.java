@@ -23,7 +23,7 @@ public class AdminUsuarios {
 		return instancia;
 	}
 	
-	public void Crear(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
+	public void crear(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
 	{
 		try
 		{
@@ -36,12 +36,18 @@ public class AdminUsuarios {
 		}
 	}
 
-	public void Modificar(Usuario usuario) throws Exception
+	public void modificar(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
 	{
 		try
 		{
-			usuario.actualizar();
-			usuarios.replace(usuario.getIdUsuario(), usuario);
+			Usuario usr = buscar(idUsuario);
+			usr.setPassword(password);
+			usr.setNombre(nombre);
+			usr.setApellido(apellido);
+			usr.setFechaNac(fechaNac);
+			usr.setEmail(email);
+			usr.actualizar();
+			usuarios.replace(usr.getIdUsuario(), usr);
 		}
 		catch (Exception e)
 		{
@@ -49,8 +55,7 @@ public class AdminUsuarios {
 		}
 	}
 	
-	
-	public Usuario Buscar(String idUsuario) throws Exception
+	private Usuario buscar(String idUsuario) throws Exception
 	{
 		String id = idUsuario.trim().toLowerCase();
 		// Primero lo busco en la coleccion de usuarios, que uso como cache
@@ -60,30 +65,34 @@ public class AdminUsuarios {
 			return usr;
 		else
 			// Si no lo encontre, voy a la base a buscarlo y si estaba, lo agrego a la coleccion para tenerlo cacheado
-			usr = AdmPersistenciaUsuarios.getInstancia().Buscar(idUsuario);
+			usr = AdmPersistenciaUsuarios.getInstancia().buscar(idUsuario);
 			if (usr != null) usuarios.put(idUsuario, usr);
 			return usr;
 	}
 	
-	public Usuario AutenticarUsuario(String idUsuario, String password) throws Exception
+	public UsuarioView obtener(String idUsuario) throws Exception
 	{
-		Usuario usr = this.Buscar(idUsuario);
+		Usuario usr = this.buscar(idUsuario);
+		if (usr != null)
+			return usr.getView();
+		else return null;
+	}
+	
+	public Boolean autenticar(String idUsuario, String password) throws Exception
+	{
+		Usuario usr = this.buscar(idUsuario);
 		if (usr != null)
 		{
-			if (usr.getPassword().equals(password))
-			{
-				return usr;
-			}
-			else return null;
+			return usr.getPassword().equals(password); 
 		}
 		else return null;
 	}
 
-	public List<UsuarioIDNombreView> ListarUsuarios() throws Exception
+	public List<UsuarioIdNombreView> listarIdNombre() throws Exception
 	{
-		List<Usuario> usuarios = AdmPersistenciaUsuarios.getInstancia().ListarUsuarios();
+		List<Usuario> usuarios = AdmPersistenciaUsuarios.getInstancia().listarIdNombre();
 		
-		List<UsuarioIDNombreView> lista = new ArrayList<UsuarioIDNombreView>();
+		List<UsuarioIdNombreView> lista = new ArrayList<UsuarioIdNombreView>();
 		for (Usuario usr: usuarios)
 		{
 			lista.add(usr.getIDNombreView());

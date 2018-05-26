@@ -1,6 +1,5 @@
 package vista;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.List;
 
@@ -13,15 +12,13 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import controlador.AdminUsuarios;
-import controlador.UsuarioIDNombreView;
-import modelo.Usuario;
+import controlador.UsuarioIdNombreView;
+import controlador.UsuarioView;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
 public class ABMUsuarios extends JFrame {
@@ -87,8 +84,7 @@ public class ABMUsuarios extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				try 
 				{
-					Usuario usr = AdminUsuarios.getInstancia().Buscar(table.getValueAt(table.getSelectedRow(), 0).toString());
-					
+					UsuarioView usr = AdminUsuarios.getInstancia().obtener(table.getValueAt(table.getSelectedRow(), 0).toString());
 					if (usr != null)
 					{
 						DatosUsuario formDatosUsuario = new DatosUsuario();
@@ -137,9 +133,9 @@ public class ABMUsuarios extends JFrame {
 
 		try
 		{
-			List<UsuarioIDNombreView> lista = AdminUsuarios.getInstancia().ListarUsuarios();
+			List<UsuarioIdNombreView> lista = AdminUsuarios.getInstancia().listarIdNombre();
 
-			for(UsuarioIDNombreView u : lista) {
+			for(UsuarioIdNombreView u : lista) {
 				fila[0] = u.getIdUsuario();
 				fila[1] = u.getApellido();
 				fila[2] = u.getNombre();

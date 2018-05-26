@@ -1,6 +1,7 @@
 package vista;
 
 import java.awt.EventQueue;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,7 +11,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
 import controlador.AdminUsuarios;
-import modelo.Usuario;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -134,7 +134,7 @@ public class DatosUsuario extends JDialog {
 					{
 						if (!modoEdicion)
 						{
-							AdminUsuarios.getInstancia().Crear(
+							AdminUsuarios.getInstancia().crear(
 								txtIDUsuario.getText(), 
 								pwdPassword.getPassword().toString(), 
 								txtNombre.getText(), 
@@ -145,13 +145,14 @@ public class DatosUsuario extends JDialog {
 						}
 						else
 						{
-							Usuario usr = AdminUsuarios.getInstancia().Buscar(txtIDUsuario.getText());
-							usr.setPassword(pwdPassword.getPassword().toString());
-							usr.setNombre(txtNombre.getText());
-							usr.setApellido(txtApellido.getText());
-							usr.setFechaNac(new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()));
-							usr.setEmail(txtEmail.getText());
-							usr.actualizar();							
+							AdminUsuarios.getInstancia().modificar(
+									txtIDUsuario.getText(), 
+									pwdPassword.getPassword().toString(), 
+									txtNombre.getText(), 
+									txtApellido.getText(),
+									new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
+									txtEmail.getText()
+									);
 						}						
 						setVisible(false);
 					}
@@ -178,6 +179,7 @@ public class DatosUsuario extends JDialog {
 		contentPane.add(btnCancelar);
 		this.LimpiarCampos();
 		cancelado = false;
+		modoEdicion = false;
 	}
 	
 	public void setIdUsuario(String usrId)

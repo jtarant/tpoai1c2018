@@ -1,11 +1,11 @@
 package controlador;
 
-public class UsuarioIDNombreView {
+public class UsuarioIdNombreView {
 	private String idUsuario;
 	private String nombre;
 	private String apellido;
 	
-	public UsuarioIDNombreView(String idUsuario, String nombre, String apellido)
+	public UsuarioIdNombreView(String idUsuario, String nombre, String apellido)
 	{
 		this.idUsuario = idUsuario;
 		this.nombre = nombre;

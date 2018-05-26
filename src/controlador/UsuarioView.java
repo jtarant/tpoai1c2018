@@ -1,4 +1,4 @@
-package vista;
+package controlador;
 
 import java.util.Date;
 
@@ -9,9 +9,8 @@ public class UsuarioView {
 		private String apellido;
 		private Date fechaNac;
 		private String email;
-		private Boolean activo;
 		
-		public UsuarioView(String id, String pwd, String n, String a, Date fn, String e, Boolean s)
+		public UsuarioView(String id, String pwd, String n, String a, Date fn, String e)
 		{
 			idUsuario = id;
 			password = pwd;
@@ -19,7 +18,6 @@ public class UsuarioView {
 			apellido = a;
 			fechaNac = fn;
 			email = e;
-			activo = s;
 		}
 		
 		public String getIdUsuario()
@@ -45,9 +43,5 @@ public class UsuarioView {
 		public String getEmail()
 		{
 			return email;
-		}
-		public Boolean getActivo()
-		{
-			return activo;
 		}
 }

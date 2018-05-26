@@ -24,7 +24,7 @@ public class AdmPersistenciaUsuarios {
 		return instancia;
 	}
 	
-	public void Insertar(Usuario usr) throws Exception
+	public void insertar(Usuario usr) throws Exception
 	{
 		Connection cnx = null;
 		try
@@ -52,7 +52,7 @@ public class AdmPersistenciaUsuarios {
 		}		
 	}
 
-	public Usuario Buscar(String idUsuario) throws Exception
+	public Usuario buscar(String idUsuario) throws Exception
 	{
 		Connection cnx = null;
 		Usuario usr = null;
@@ -87,7 +87,7 @@ public class AdmPersistenciaUsuarios {
 		}		
 	}
 
-	public List<Usuario> ListarUsuarios() throws Exception
+	public List<Usuario> listarIdNombre() throws Exception
 	{
 		Connection cnx = null;
 		List<Usuario> lista = new ArrayList<Usuario>();
@@ -118,7 +118,7 @@ public class AdmPersistenciaUsuarios {
 		}
 	}
 
-	public void Modificar(Usuario usr) throws Exception 
+	public void modificar(Usuario usr) throws Exception 
 	{
 		Connection cnx = null;
 		try

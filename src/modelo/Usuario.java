@@ -2,7 +2,8 @@ package modelo;
 
 import java.util.Date;
 
-import controlador.UsuarioIDNombreView;
+import controlador.UsuarioIdNombreView;
+import controlador.UsuarioView;
 import persistencia.AdmPersistenciaUsuarios;
 
 public class Usuario {
@@ -23,7 +24,7 @@ public class Usuario {
 		this.setFechaNac(fechaNac);
 		this.setEmail(email);
 		this.activo = true;
-		AdmPersistenciaUsuarios.getInstancia().Insertar(this);
+		AdmPersistenciaUsuarios.getInstancia().insertar(this);
 	}
 	
 	public Usuario(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email, Boolean activo)
@@ -93,12 +94,16 @@ public class Usuario {
 	{
 		return activo;
 	}
-	public UsuarioIDNombreView getIDNombreView()
+	public UsuarioView getView()
 	{
-		return new UsuarioIDNombreView(getIdUsuario(),getNombre(),getApellido());
+		return new UsuarioView(getIdUsuario(),getPassword(),getNombre(),getApellido(),getFechaNac(),getEmail());
+	}
+	public UsuarioIdNombreView getIDNombreView()
+	{
+		return new UsuarioIdNombreView(getIdUsuario(),getNombre(),getApellido());
 	}
 	public void actualizar() throws Exception 
 	{
-		AdmPersistenciaUsuarios.getInstancia().Modificar(this);
+		AdmPersistenciaUsuarios.getInstancia().modificar(this);
 	}
 }
