@@ -10,8 +10,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-
 import controlador.AdminUsuarios;
 import controlador.UsuarioIdNombreView;
 import controlador.UsuarioView;
@@ -19,38 +17,24 @@ import controlador.UsuarioView;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JScrollPane;
-import java.awt.Component;
 
-public class ABMUsuarios extends JFrame {
+public class ABMUsuarios extends JDialog {
 
 	private JPanel contentPane;
 	private JTable table;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ABMUsuarios frame = new ABMUsuarios();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public ABMUsuarios() {
+		setModal(true);
+		setResizable(false);
 		setTitle("Administracion de Usuarios");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 477, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -115,10 +99,6 @@ public class ABMUsuarios extends JFrame {
 		btnModificar.setEnabled(false);
 		btnModificar.setBounds(366, 45, 89, 23);
 		contentPane.add(btnModificar);
-		
-		JButton btnCerrar = new JButton("Cerrar");
-		btnCerrar.setBounds(366, 227, 89, 23);
-		contentPane.add(btnCerrar);
 		
 		JButton btnEliminar = new JButton("Eliminar");
 		btnEliminar.addActionListener(new ActionListener() {

@@ -6,6 +6,13 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JButton;
+import java.awt.Font;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -31,12 +38,40 @@ public class VentanaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaPrincipal() {
+		setTitle("Sistema de Gestion de Listas de Regalos");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 680, 499);
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu mnUsuarios = new JMenu("Administracion");
+		menuBar.add(mnUsuarios);
+		
+		JMenuItem mntmGestionDeUsuarios = new JMenuItem("Gestion de Usuarios");
+		mntmGestionDeUsuarios.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				ABMUsuarios abmUsuarios = new ABMUsuarios();
+				abmUsuarios.setVisible(true);
+			}
+		});
+		mnUsuarios.add(mntmGestionDeUsuarios);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JButton btnNuevaLista = new JButton("Nueva Lista");
+		btnNuevaLista.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnNuevaLista.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				DatosListaRegalos formListaRegalos = new DatosListaRegalos();
+				formListaRegalos.setVisible(true);
+			}
+		});
+		btnNuevaLista.setBounds(10, 11, 105, 23);
+		contentPane.add(btnNuevaLista);
 	}
-
 }

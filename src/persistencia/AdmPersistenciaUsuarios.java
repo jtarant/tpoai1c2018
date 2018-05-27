@@ -61,7 +61,7 @@ public class AdmPersistenciaUsuarios {
 		try
 		{
 			cnx = PoolConexiones.getConexion().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("SELECT * FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE idUsuario=?");
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT * FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE idUsuario=? AND Activo=1");
 			cmdSql.setString(1, idUsuario);
 			ResultSet result = cmdSql.executeQuery();
 			if (result.next())
@@ -96,7 +96,7 @@ public class AdmPersistenciaUsuarios {
 		try
 		{
 			cnx = PoolConexiones.getConexion().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("SELECT IdUsuario,Nombre,Apellido FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS ORDER BY IdUsuario");
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT IdUsuario,Nombre,Apellido FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo=1 ORDER BY IdUsuario");
 			ResultSet result = cmdSql.executeQuery();
 			while (result.next())
 			{
