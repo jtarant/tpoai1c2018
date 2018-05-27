@@ -42,6 +42,7 @@ public class DatosListaRegalos extends JDialog {
 	private JFormattedTextField mskFechaFin;
 	private JButton btnAgregar;
 	private JButton btnQuitar;
+	private int codigo;
 	private List<UsuarioIdNombreView> usuariosDisponibles;
 	private List<String> participantes;
 	private Boolean modoEdicion;
@@ -265,9 +266,11 @@ public class DatosListaRegalos extends JDialog {
 			String usrLogueado = AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario();
 			usuariosDisponibles = AdminUsuarios.getInstancia().listarIdNombre();
 			usuariosDisponibles.removeIf(u -> u.getIdUsuario().equals(usrLogueado));	// El admin no puede ser participante
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error al obtener la lista de usuarios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		} 
+		catch (Exception e) 
+		{
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener la lista de usuarios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		participantes = new ArrayList<String>();
 	}
@@ -318,4 +321,38 @@ public class DatosListaRegalos extends JDialog {
 		tblNoParticipantes.validate();
 	}
 	
+	public void setCodigo(int codigo)
+	{
+		this.codigo = codigo;
+		this.modoEdicion = true;
+		this.setTitle("Modificar Lista de Regalos");
+	}
+	public void setNombreAgasajado(String nombre)
+	{
+		txtNombreAgasajado.setText(nombre);
+	}
+	public void setFechaAgasajo(Date fecha)
+	{
+		mskFechaAgasajo.setText(new SimpleDateFormat("dd/MM/yyyy").format(fecha));
+	}
+	public void setMontoPorParticipante(float monto)
+	{
+		mskMonto.setValue(monto);
+	}
+	public void setFechaInicio(Date fecha)
+	{
+		mskFechaInicio.setText(new SimpleDateFormat("dd/MM/yyyy").format(fecha));
+	}
+	public void setFechaFin(Date fecha)
+	{
+		mskFechaFin.setText(new SimpleDateFormat("dd/MM/yyyy").format(fecha));
+	}
+	public void setIdUsuariosParticipantes(List<String> participantes)
+	{
+		this.participantes = participantes;
+	}
+	public Boolean getCancelado() 
+	{
+		return cancelado;
+	}
 }

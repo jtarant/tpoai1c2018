@@ -5,6 +5,9 @@ import java.util.Hashtable;
 import java.util.List;
 
 import modelo.ListaRegalos;
+import modelo.Usuario;
+import persistencia.AdmPersistenciaListasRegalos;
+import persistencia.AdmPersistenciaUsuarios;
 
 
 public class AdminListaRegalos {
@@ -69,7 +72,7 @@ public class AdminListaRegalos {
 		}		
 	}
 	
-/*	private ListaRegalos buscar(int codigo) throws Exception
+	private ListaRegalos buscar(int codigo) throws Exception
 	{
 		// Primero lo busco en la coleccion de listas de regalos, que uso como cache
 		ListaRegalos lista = null;
@@ -77,30 +80,25 @@ public class AdminListaRegalos {
 		if (lista != null)
 			return lista;
 		else
+		{
 			// Si no lo encontre, voy a la base a buscarlo y si estaba, lo agrego a la coleccion para tenerlo cacheado
-			//usr = AdmPersistenciaUsuarios.getInstancia().buscar(idUsuario);
+			lista = AdmPersistenciaListasRegalos.getInstancia().buscar(codigo);
 			if (lista != null) listas.put(codigo, lista);
 			return lista;
+		}
 	}
-*/	
-/*	public UsuarioView obtener(String idUsuario) throws Exception
+	
+	public ListaRegalosView obtener(int codigo) throws Exception
 	{
-		Usuario usr = this.buscar(idUsuario);
-		if (usr != null)
-			return usr.getView();
+		ListaRegalos lista = this.buscar(codigo);
+		if (lista != null)
+			return lista.getView();
 		else return null;
 	}
-*/	
-/*	public List<UsuarioIdNombreView> listarIdNombre() throws Exception
+	
+	public List<ListaResumenView> listarMisListas(String idUsuario) throws Exception
 	{
-		List<Usuario> usuarios = AdmPersistenciaUsuarios.getInstancia().listarIdNombre();
-		
-		List<UsuarioIdNombreView> lista = new ArrayList<UsuarioIdNombreView>();
-		for (Usuario usr: usuarios)
-		{
-			lista.add(usr.getIDNombreView());
-		}
-		return lista;
+		Usuario usr = AdmPersistenciaUsuarios.getInstancia().buscar(idUsuario);
+		return AdmPersistenciaListasRegalos.getInstancia().listarMisListas(usr);
 	}
-*/
 }

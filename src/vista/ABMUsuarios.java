@@ -1,9 +1,7 @@
 package vista;
 
-import java.awt.EventQueue;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -61,8 +59,11 @@ public class ABMUsuarios extends JDialog {
 						LlenarGrilla();	
 					}
 					formDatosUsuario.dispose();
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error al guardar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -91,8 +92,11 @@ public class ABMUsuarios extends JDialog {
 						}
 						formDatosUsuario.dispose();
 					}
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error al actualizar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}				
 			}
 		});
@@ -115,6 +119,7 @@ public class ABMUsuarios extends JDialog {
 				catch (Exception e) 
 				{
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error al actualizar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -162,6 +167,7 @@ public class ABMUsuarios extends JDialog {
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Error al cargar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		table.setModel(model);

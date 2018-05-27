@@ -1,10 +1,13 @@
 package modelo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import controlador.ListaRegalosView;
+import controlador.ParticipanteView;
 import persistencia.AdmPersistenciaListasRegalos;
 import persistencia.AdmPersistenciaUsuarios;
 
@@ -35,9 +38,23 @@ public class ListaRegalos
 		for (String idParticipante : idParticipantes)
 		{
 			Usuario usr = AdmPersistenciaUsuarios.getInstancia().buscar(idParticipante);
-			agregarParticipante(usr);
+			agregarParticipante(usr, null);
 		}
 		AdmPersistenciaListasRegalos.getInstancia().insertar(this);
+	}
+
+	public ListaRegalos(int codigo, Usuario admin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, EstadoListaRegalos estado) throws Exception
+	{
+		// TODO: DUDA: Los controladores no pueden retornar entidades de negocio, solo Views (DTOs). Puedo desde un controlador usar otro? porque me va a devolver vistas, no entidades.
+		setCodigo(codigo);
+		setAdmin(admin);
+		setFechaAgasajo(fechaAgasajo);
+		setNombreAgasajado(nombreAgasajado);
+		setMontoPorParticipante(monto);
+		setFechaInicio(fechaInicio);
+		setFechaFin(fechaFin);
+		setEstado(estado);
+		participantes = new Hashtable<String,Participante>();
 	}
 	
 	public void setAdmin(Usuario usr)
@@ -72,12 +89,12 @@ public class ListaRegalos
 	{
 		this.estado = estado;
 	}
-	public void agregarParticipante(Usuario usr)
+	public void agregarParticipante(Usuario usr, Date fechaPagado)
 	{
 		// El admin no puede ser participante, asi que si lo agregan, lo ignoro
 		if (!usr.getIdUsuario().equals(getAdmin().getIdUsuario()))
 		{
-			Participante participante = new Participante(usr);
+			Participante participante = new Participante(usr, fechaPagado);
 			participantes.put(usr.getIdUsuario(), participante);
 		}
 	}
@@ -116,5 +133,17 @@ public class ListaRegalos
 	public Collection<Participante> getParticipantes()
 	{
 		return participantes.values();
+	}
+	public ListaRegalosView getView()
+	{
+		List<ParticipanteView> partv = new ArrayList<ParticipanteView>();
+		ParticipanteView pv;
+		
+		for (Participante p: getParticipantes())
+		{
+			pv = new ParticipanteView(p.getUsuario().getIdUsuario(), p.getFechaPago());
+			partv.add(pv);
+		}
+		return new ListaRegalosView(getCodigo(), getAdmin().getIdUsuario(), getFechaAgasajo(), getNombreAgasajado(), getMontoPorParticipante(), getFechaInicio(), getFechaFin(), partv);
 	}
 }

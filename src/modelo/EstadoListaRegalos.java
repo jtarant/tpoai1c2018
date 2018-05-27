@@ -13,4 +13,12 @@ public enum EstadoListaRegalos {
 	{
 		return valor;
 	}
+	public static EstadoListaRegalos fromInt(int valor)
+	{
+		for (EstadoListaRegalos tipo: values())
+		{
+			if (tipo.getValor() == valor) return tipo;
+		}
+		return null;
+	}
 }

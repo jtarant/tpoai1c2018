@@ -5,9 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
+import controlador.ListaResumenView;
+import modelo.EstadoListaRegalos;
 import modelo.ListaRegalos;
 import modelo.Participante;
+import modelo.Usuario;
 
 public class AdmPersistenciaListasRegalos {
 	private static AdmPersistenciaListasRegalos instancia;
@@ -69,6 +74,88 @@ public class AdmPersistenciaListasRegalos {
 		{
 			System.out.println(e.getMessage());
 			if (cnx != null) cnx.rollback();
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+		}		
+	}
+
+	public List<ListaResumenView> listarMisListas(Usuario usr) throws Exception 
+	{
+		Connection cnx = null;
+		List<ListaResumenView> listas = new ArrayList<ListaResumenView>();
+
+		try
+		{
+			cnx = PoolConexiones.getConexion().getConnection();
+			String sql = "SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado " + 
+					"FROM [TPO_AI_TARANTINO_CALISI].[dbo].[ListasRegalos] WHERE IdUsuarioAdmin=? " + 
+					"UNION " + 
+					"SELECT lst.CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado " + 
+					"FROM [TPO_AI_TARANTINO_CALISI].[dbo].[ListasRegalos] AS lst " + 
+					"INNER JOIN [TPO_AI_TARANTINO_CALISI].[dbo].[Participantes] as part ON part.CodigoLista=lst.CodigoLista " + 
+					"WHERE part.IdUsuario=?";
+			PreparedStatement cmdSql = cnx.prepareStatement(sql);
+			cmdSql.setString(1, usr.getIdUsuario());
+			cmdSql.setString(2, usr.getIdUsuario());
+			ResultSet result = cmdSql.executeQuery();
+			
+			ListaResumenView lst;
+			while (result.next())
+			{
+				lst = new ListaResumenView(result.getInt(1), result.getString(2), result.getDate(3), result.getString(4), result.getFloat(5), result.getDate(6), result.getDate(7), result.getInt(8));
+				listas.add(lst);
+			}
+			PoolConexiones.getConexion().realeaseConnection(cnx);
+			return listas;
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+		}		
+	}
+
+	public ListaRegalos buscar(int codigo) throws Exception 
+	{
+		Connection cnx = null;
+		try
+		{
+			ListaRegalos lista = null;
+			
+			cnx = PoolConexiones.getConexion().getConnection();
+			/* DATOS DE LA LISTA */
+			PreparedStatement cmdSqlLista = cnx.prepareStatement("SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=?");
+			cmdSqlLista.setInt(1, codigo);
+			ResultSet resultLista = cmdSqlLista.executeQuery();
+			if (resultLista.next())
+			{
+				Usuario admin = AdmPersistenciaUsuarios.getInstancia().buscar(resultLista.getString(2));
+				lista = new ListaRegalos(resultLista.getInt(1), admin, resultLista.getDate(3), resultLista.getString(4), resultLista.getFloat(5), resultLista.getDate(6), resultLista.getDate(7), EstadoListaRegalos.fromInt(resultLista.getInt(8)));
+				
+				/* PARTICIPANTES */
+				PreparedStatement cmdSqlParticipante = cnx.prepareStatement("SELECT IdUsuario,FechaPago FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
+				cmdSqlParticipante.setInt(1, lista.getCodigo());
+				ResultSet resultParticipantes = cmdSqlParticipante.executeQuery();
+
+				while (resultParticipantes.next())
+				{
+					Usuario p = AdmPersistenciaUsuarios.getInstancia().buscar(resultParticipantes.getString(1));
+					lista.agregarParticipante(p, resultParticipantes.getDate(2));
+				}				
+			}
+			PoolConexiones.getConexion().realeaseConnection(cnx);
+			return lista;
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
 			throw e;
 		}
 		finally
