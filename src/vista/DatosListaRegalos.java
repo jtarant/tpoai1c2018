@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import javax.swing.text.NumberFormatter;
 
+import controlador.AdminListaRegalos;
 import controlador.AdminUsuarios;
 import controlador.UsuarioIdNombreView;
 
@@ -108,6 +109,35 @@ public class DatosListaRegalos extends JDialog {
 			JButton btnAceptar = new JButton("Aceptar");
 			btnAceptar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					String msgErrorValidaciones = getValidacionesFallidas();
+					if (msgErrorValidaciones.length() > 0)
+						JOptionPane.showMessageDialog(null, msgErrorValidaciones);
+					else
+					{
+						try
+						{
+							if (!modoEdicion)
+							{
+								AdminListaRegalos.getInstancia().crear(
+										AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario(), 
+										new SimpleDateFormat("dd/MM/yyyy").parse(mskFechaAgasajo.getText()), 
+										txtNombreAgasajado.getText(), 
+										Float.parseFloat(mskMonto.getText()), 
+										new SimpleDateFormat("dd/MM/yyyy").parse(mskFechaInicio.getText()), 
+										new SimpleDateFormat("dd/MM/yyyy").parse(mskFechaFin.getText()), 
+										participantes
+										);
+							}
+							else
+							{
+							}						
+							setVisible(false);
+						}
+						catch (Exception e)
+						{
+							JOptionPane.showMessageDialog(null, "Error al guardar los cambios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}					
 				}
 			});
 			btnAceptar.setBounds(349, 398, 101, 23);
@@ -230,8 +260,11 @@ public class DatosListaRegalos extends JDialog {
 		mskMonto.setValue(0);
 		mskFechaInicio.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 		mskFechaFin.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
-		try {
+		try 
+		{
+			String usrLogueado = AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario();
 			usuariosDisponibles = AdminUsuarios.getInstancia().listarIdNombre();
+			usuariosDisponibles.removeIf(u -> u.getIdUsuario().equals(usrLogueado));	// El admin no puede ser participante
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Error al obtener la lista de usuarios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
@@ -239,6 +272,18 @@ public class DatosListaRegalos extends JDialog {
 		participantes = new ArrayList<String>();
 	}
 	
+	private String getValidacionesFallidas()
+	{
+		StringBuilder msgError = new StringBuilder("");
+		
+		if (txtNombreAgasajado.getText().trim().length() == 0) msgError.append("* Debe ingresar el nombre del agasajado.\n");
+		if (!ValidadorTexto.esFechaValida(mskFechaAgasajo.getText())) msgError.append("* Debe ingresar una fecha de agasajo valida.\n");
+		if (!ValidadorTexto.esMonedaValida(mskMonto.getText())) msgError.append("* Debe ingresar un monto valido.\n");
+		if (!ValidadorTexto.esFechaValida(mskFechaInicio.getText())) msgError.append("* Debe ingresar una fecha de inicio valida.\n");
+		if (!ValidadorTexto.esFechaValida(mskFechaFin.getText())) msgError.append("* Debe ingresar una fecha de fin valida.\n");
+		return msgError.toString();
+	}
+		
 	private void LlenarGrillas()
 	{
 		DefaultTableModel model1, model2;

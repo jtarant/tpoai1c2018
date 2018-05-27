@@ -10,10 +10,12 @@ import persistencia.AdmPersistenciaUsuarios;
 public class AdminUsuarios {
 	private static AdminUsuarios instancia;
 	private Hashtable<String, Usuario> usuarios;
+	private Usuario usuarioLogueado;
 	
 	private AdminUsuarios()
 	{
 		usuarios = new Hashtable<String, Usuario>();
+		usuarioLogueado = null;
 	}
 	
 	public static AdminUsuarios getInstancia()
@@ -97,7 +99,12 @@ public class AdminUsuarios {
 		Usuario usr = this.buscar(idUsuario);
 		if (usr != null)
 		{
-			return usr.getPassword().equals(password); 
+			if (usr.getPassword().equals(password))
+			{
+				this.usuarioLogueado = usr;
+				return true;
+			}
+			else return false;
 		}
 		else return null;
 	}
@@ -112,5 +119,11 @@ public class AdminUsuarios {
 			lista.add(usr.getIDNombreView());
 		}
 		return lista;
+	}
+	
+	public UsuarioView getUsuarioLogueado()
+	{
+		if (usuarioLogueado != null) return usuarioLogueado.getView();
+		else return null;
 	}
 }

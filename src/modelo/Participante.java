@@ -5,13 +5,8 @@ import java.util.Date;
 public class Participante 
 {
 	private Usuario usuario;
-	private Boolean estadoPagado;
 	private Date fechaPago;
 
-	public void setEstadoPagado(Boolean pagado)
-	{
-		estadoPagado = pagado;
-	}
 	public void setFechaPago(Date fecha)
 	{
 		fechaPago = fecha;
@@ -24,14 +19,12 @@ public class Participante
 	public Participante(Usuario usuario)
 	{
 		setUsuario(usuario);
-		setEstadoPagado(false);
 		setFechaPago(null);
 	}
 	
-	public Participante(Usuario usuario, Boolean pagado, Date fechaPago)
+	public Participante(Usuario usuario, Date fechaPago)
 	{
 		setUsuario(usuario);
-		setEstadoPagado(pagado);
 		setFechaPago(fechaPago);
 	}
 	
@@ -39,9 +32,9 @@ public class Participante
 	{
 		return usuario;
 	}
-	public Boolean getEstadoPagado()
+	public Boolean getPagoRealizado()
 	{
-		return estadoPagado;
+		return (getFechaPago() != null);
 	}
 	public Date getFechaPago()
 	{

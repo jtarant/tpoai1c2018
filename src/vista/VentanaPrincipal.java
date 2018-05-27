@@ -1,11 +1,13 @@
 package vista;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controlador.AdminUsuarios;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -73,5 +75,13 @@ public class VentanaPrincipal extends JFrame {
 		});
 		btnNuevaLista.setBounds(10, 11, 105, 23);
 		contentPane.add(btnNuevaLista);
+		
+		// TODO: Deshardcodear haciendo ventana de Login
+		try {
+			AdminUsuarios.getInstancia().autenticar("jtarant", "1234");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 }

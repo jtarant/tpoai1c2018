@@ -119,7 +119,7 @@ public class DatosUsuario extends JDialog {
 						{
 							AdminUsuarios.getInstancia().crear(
 								txtIDUsuario.getText(), 
-								pwdPassword.getPassword().toString(), 
+								String.valueOf(pwdPassword.getPassword()), 
 								txtNombre.getText(), 
 								txtApellido.getText(),
 								new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
@@ -130,7 +130,7 @@ public class DatosUsuario extends JDialog {
 						{
 							AdminUsuarios.getInstancia().modificar(
 									txtIDUsuario.getText(), 
-									pwdPassword.getPassword().toString(), 
+									String.valueOf(pwdPassword.getPassword()), 
 									txtNombre.getText(), 
 									txtApellido.getText(),
 									new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
@@ -205,7 +205,7 @@ public class DatosUsuario extends JDialog {
 		if (pwdPassword.getPassword().length == 0) msgError.append("* Debe ingesar una contraseña\n");
 		if (txtNombre.getText().trim().length() == 0) msgError.append("* Debe ingresar el nombre del usuario.\n");
 		if (txtApellido.getText().trim().length() == 0) msgError.append("* Debe ingresar el apellido del usuario.\n");
-		if (mskFNac.getText().trim().length() == 0) msgError.append("* Debe ingresar la fecha de nacimiento.\n");
+		if (!ValidadorTexto.esFechaValida(mskFNac.getText())) msgError.append("* Debe ingresar la fecha de nacimiento valida.\n");
 		if (txtEmail.getText().trim().length() == 0) msgError.append("* Debe ingresar la direccion de email.\n");
 		return msgError.toString();
 	}
