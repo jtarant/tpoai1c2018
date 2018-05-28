@@ -45,7 +45,7 @@ public class ListaRegalos
 
 	public ListaRegalos(int codigo, Usuario admin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, EstadoListaRegalos estado) throws Exception
 	{
-		// TODO: DUDA: Los controladores no pueden retornar entidades de negocio, solo Views (DTOs). Puedo desde un controlador usar otro? porque me va a devolver vistas, no entidades.
+		// TODO: DUDA: Los controladores no pueden retornar entidades de negocio, solo Views (DTOs). Puedo desde un controlador usar otro? porque me va a devolver vistas, no entidades y me pierdo de aprovechar su coleccion interna de cache.
 		setCodigo(codigo);
 		setAdmin(admin);
 		setFechaAgasajo(fechaAgasajo);

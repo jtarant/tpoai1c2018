@@ -131,6 +131,7 @@ public class DatosListaRegalos extends JDialog {
 							}
 							else
 							{
+								// TODO: Modificacion de lista
 							}						
 							setVisible(false);
 						}
@@ -251,7 +252,16 @@ public class DatosListaRegalos extends JDialog {
 		cancelado = false;
 		modoEdicion = false;
 		LimpiarCampos();
-		LlenarGrillas();
+	}
+	
+	@Override
+	public void setVisible(boolean b)
+	{
+		if (b)
+		{
+			LlenarGrillas();
+		}
+		super.setVisible(b);
 	}
 	
 	private void LimpiarCampos()

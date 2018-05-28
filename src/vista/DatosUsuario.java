@@ -1,6 +1,5 @@
 package vista;
 
-import java.awt.EventQueue;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -141,6 +140,7 @@ public class DatosUsuario extends JDialog {
 					}
 					catch (Exception e)
 					{
+						e.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Error al guardar los cambios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				}

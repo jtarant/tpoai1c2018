@@ -5,8 +5,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import javax.swing.JDialog;
-
 public class ValidadorTexto {
 	final static String DATE_FORMAT = "dd/MM/yyyy";
 
