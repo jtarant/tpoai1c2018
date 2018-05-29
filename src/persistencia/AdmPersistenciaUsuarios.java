@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -162,14 +161,41 @@ public class AdmPersistenciaUsuarios {
 				cmdSql.setString(1, usr.getIdUsuario());
 				cmdSql.execute();
 			}
-			catch (SQLIntegrityConstraintViolationException se)
+			catch (SQLException se)
 			{
-				// Si no puedo, es porque esta en uso, hago eliminacion logica
-				cmdSql = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.USUARIOS SET Activo=0 WHERE IdUsuario=?");
-				cmdSql.setString(1, usr.getIdUsuario());
-				cmdSql.execute();
+				if (se.getSQLState().startsWith("23"))
+				{
+					// Si no puedo, es porque esta en uso, hago eliminacion logica
+					cmdSql = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.USUARIOS SET Activo=0 WHERE IdUsuario=?");
+					cmdSql.setString(1, usr.getIdUsuario());
+					cmdSql.execute();
+				}
+				else throw se;
 			}
 			PoolConexiones.getConexion().realeaseConnection(cnx);
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+		}
+	}
+
+	public int getCantidadUsuarios() throws Exception 
+	{
+		Connection cnx = null;
+		try
+		{
+			cnx = PoolConexiones.getConexion().getConnection();
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT COUNT(*) FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo=1");
+			ResultSet result = cmdSql.executeQuery();
+			PoolConexiones.getConexion().realeaseConnection(cnx);
+			result.next();
+			return result.getInt(1);
 		}
 		catch (Exception e)
 		{

@@ -104,9 +104,13 @@ public class AdminUsuarios {
 				this.usuarioLogueado = usr;
 				return true;
 			}
-			else return false;
+			else 
+			{
+				this.usuarioLogueado = null;
+				return false;
+			}
 		}
-		else return null;
+		else return false;
 	}
 
 	public List<UsuarioIdNombreView> listarIdNombre() throws Exception
@@ -125,5 +129,10 @@ public class AdminUsuarios {
 	{
 		if (usuarioLogueado != null) return usuarioLogueado.getView();
 		else return null;
+	}
+	
+	public int getCantidadUsuarios() throws Exception
+	{
+		return AdmPersistenciaUsuarios.getInstancia().getCantidadUsuarios();
 	}
 }

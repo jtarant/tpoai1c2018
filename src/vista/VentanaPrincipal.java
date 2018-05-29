@@ -12,6 +12,8 @@ import controlador.AdminUsuarios;
 import controlador.ListaRegalosView;
 import controlador.ListaResumenView;
 import controlador.ParticipanteView;
+import controlador.UsuarioView;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -25,11 +27,14 @@ import javax.swing.JButton;
 import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.JLabel;
 
 public class VentanaPrincipal extends JFrame {
 
 	private JPanel contentPane;
 	private JTable table;
+	private JButton btnNuevaLista;
+	private JLabel lblNombreUsuario;
 
 	/**
 	 * Launch the application.
@@ -70,12 +75,21 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		mnUsuarios.add(mntmGestionDeUsuarios);
+		
+		JMenuItem mntmLogincambiarDeUsuario = new JMenuItem("Login/Cambiar de usuario...");
+		mntmLogincambiarDeUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				Login();
+			}
+		});
+		mnUsuarios.add(mntmLogincambiarDeUsuario);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton btnNuevaLista = new JButton("Nueva Lista");
+		btnNuevaLista = new JButton("Nueva Lista");
 		btnNuevaLista.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		btnNuevaLista.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
@@ -148,14 +162,56 @@ public class VentanaPrincipal extends JFrame {
 		btnEliminar.setBounds(565, 247, 89, 23);
 		contentPane.add(btnEliminar);
 		
-		// TODO: Deshardcodear haciendo ventana de Login
-		try {
-			AdminUsuarios.getInstancia().autenticar("jtarant", "1234");
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		lblNombreUsuario = new JLabel("");
+		lblNombreUsuario.setBounds(367, 11, 287, 18);
+		contentPane.add(lblNombreUsuario);
+		
+		try
+		{
+			if (AdminUsuarios.getInstancia().getCantidadUsuarios() == 0)
+			{
+				this.DesactivarGestionListas();
+				JOptionPane.showMessageDialog(null, "No hay usuarios en el sistema. Cree uno y seleccione la opcion Login del menu Administacion.", "IMPORTANTE", JOptionPane.WARNING_MESSAGE);
+			}
+			else
+			{
+				this.Login();
+				if (AdminUsuarios.getInstancia().getUsuarioLogueado() == null)
+				{
+					System.exit(0);
+				}
+			}
 		}
-		LlenarGrilla();
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}		
+	}
+	
+	private void Login()
+	{
+		Login formLogin = new Login();
+		formLogin.setVisible(true);
+		formLogin.dispose();
+		
+		UsuarioView usrLogueado = AdminUsuarios.getInstancia().getUsuarioLogueado();
+		if (usrLogueado != null)
+		{
+			lblNombreUsuario.setText("Hola " + usrLogueado.getApellido() + ", " + usrLogueado.getNombre());
+			btnNuevaLista.setEnabled(true);
+			LlenarGrilla();
+		}
+		else
+		{
+			lblNombreUsuario.setText("");
+			this.DesactivarGestionListas();
+		}
+	}
+	
+	private void DesactivarGestionListas()
+	{
+		btnNuevaLista.setEnabled(false);
+		table.setEnabled(false);		
 	}
 	
 	private void LlenarGrilla()
