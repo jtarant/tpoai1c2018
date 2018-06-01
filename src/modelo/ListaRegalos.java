@@ -1,5 +1,6 @@
 package modelo;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -145,5 +146,10 @@ public class ListaRegalos
 			partv.add(pv);
 		}
 		return new ListaRegalosView(getCodigo(), getAdmin().getIdUsuario(), getFechaAgasajo(), getNombreAgasajado(), getMontoPorParticipante(), getFechaInicio(), getFechaFin(), partv);
+	}
+
+	public void eliminar() throws Exception 
+	{
+		AdmPersistenciaListasRegalos.getInstancia().eliminar(this);
 	}
 }

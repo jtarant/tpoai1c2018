@@ -3,6 +3,7 @@ package persistencia;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -147,7 +148,10 @@ public class AdmPersistenciaListasRegalos {
 				while (resultParticipantes.next())
 				{
 					Usuario p = AdmPersistenciaUsuarios.getInstancia().buscar(resultParticipantes.getString(1));
-					lista.agregarParticipante(p, resultParticipantes.getDate(2));
+					if (p != null)
+					{
+						lista.agregarParticipante(p, resultParticipantes.getDate(2));
+					}
 				}				
 			}
 			PoolConexiones.getConexion().realeaseConnection(cnx);
@@ -162,5 +166,35 @@ public class AdmPersistenciaListasRegalos {
 		{
 			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
 		}		
+	}
+
+	public void eliminar(ListaRegalos lista) throws SQLException 
+	{
+		Connection cnx = null;
+		try
+		{
+			cnx = PoolConexiones.getConexion().getConnection();
+			cnx.setAutoCommit(false); /* Abro TRANSACCION */
+			/* ELIMINO PARTICIPANTES */
+			PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
+			cmdSqlParticipante.setInt(1, lista.getCodigo());
+			cmdSqlParticipante.execute();
+			/* ELIMINO LA LISTA */
+			PreparedStatement cmdSqlLista = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=?");
+			cmdSqlLista.setInt(1, lista.getCodigo());
+			cmdSqlLista.execute();
+			cnx.commit();
+			PoolConexiones.getConexion().realeaseConnection(cnx);
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			if (cnx != null) cnx.rollback();
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+		}				
 	}
 }

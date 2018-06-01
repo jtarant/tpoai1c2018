@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import modelo.ExceptionDeNegocio;
 import modelo.ListaRegalos;
 import modelo.Usuario;
 import persistencia.AdmPersistenciaListasRegalos;
@@ -58,18 +59,22 @@ public class AdminListaRegalos {
 		}
 	}
 	
-	public void eliminar(String idUsuario) throws Exception 
+	public void eliminar(int codigo) throws Exception 
 	{
 		try 
 		{
-/*			Usuario usr = buscar(idUsuario);
-			usr.eliminar();
-			usuarios.remove(idUsuario);
-*/		}
+			ListaRegalos lista = this.buscar(codigo);
+			if (!lista.getAdmin().getIdUsuario().equals(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario()))
+			{
+				throw new ExceptionDeNegocio("Solo el usuario administrador de esta lista puede eliminarla.");
+			}
+			lista.eliminar();
+			this.listas.remove(codigo);
+		}
 		catch (Exception e)
 		{
 			throw e;
-		}		
+		}
 	}
 	
 	private ListaRegalos buscar(int codigo) throws Exception

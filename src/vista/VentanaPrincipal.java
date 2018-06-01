@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import controlador.AdminListaRegalos;
@@ -35,6 +37,9 @@ public class VentanaPrincipal extends JFrame {
 	private JTable table;
 	private JButton btnNuevaLista;
 	private JLabel lblNombreUsuario;
+	private JButton btnModificar;
+	private JButton btnSalir;
+	private JButton btnEliminar;
 
 	/**
 	 * Launch the application.
@@ -113,12 +118,13 @@ public class VentanaPrincipal extends JFrame {
 		table.setAutoscrolls(true);
 		contentPane.add(table);
 		
-		JButton btnSalir = new JButton("Salir");
+		btnSalir = new JButton("Salir");
 		btnSalir.setEnabled(false);
 		btnSalir.setBounds(367, 247, 89, 23);
 		contentPane.add(btnSalir);
 		
-		JButton btnModificar = new JButton("Modificar");
+		btnModificar = new JButton("Modificar");
+		btnModificar.setEnabled(false);
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -157,7 +163,27 @@ public class VentanaPrincipal extends JFrame {
 		btnModificar.setBounds(466, 247, 89, 23);
 		contentPane.add(btnModificar);
 		
-		JButton btnEliminar = new JButton("Eliminar");
+		btnEliminar = new JButton("Eliminar");
+		btnEliminar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				try
+				{
+					int opcion = JOptionPane.showConfirmDialog(null, "Seguro que queres eliminar la lista de regalos?", "Eliminar lista de regalos", JOptionPane.YES_NO_OPTION);
+					if (opcion == JOptionPane.YES_OPTION)
+					{
+						int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+						AdminListaRegalos.getInstancia().eliminar(codigo);
+						LlenarGrilla();
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error al eliminar:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}				
+			}
+		});
 		btnEliminar.setEnabled(false);
 		btnEliminar.setBounds(565, 247, 89, 23);
 		contentPane.add(btnEliminar);
@@ -165,6 +191,23 @@ public class VentanaPrincipal extends JFrame {
 		lblNombreUsuario = new JLabel("");
 		lblNombreUsuario.setBounds(367, 11, 287, 18);
 		contentPane.add(lblNombreUsuario);
+		
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent event) {
+				if (table.getSelectedRow() != -1)
+				{
+					btnModificar.setEnabled(true);
+					btnEliminar.setEnabled(true);
+					btnSalir.setEnabled(true);
+				}
+				else
+				{
+					btnModificar.setEnabled(false);
+					btnEliminar.setEnabled(false);
+					btnSalir.setEnabled(false);
+				}
+			}
+		});		
 		
 		try
 		{
