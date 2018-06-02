@@ -197,4 +197,27 @@ public class AdmPersistenciaListasRegalos {
 			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
 		}				
 	}
+
+	public void quitarParticipante(int codigo, String idUsuario) throws Exception 
+	{
+		Connection cnx = null;
+		try
+		{
+			cnx = PoolConexiones.getConexion().getConnection();
+			PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=? AND IdUsuario=?");
+			cmdSqlParticipante.setInt(1, codigo);
+			cmdSqlParticipante.setString(2, idUsuario);
+			cmdSqlParticipante.execute();
+			PoolConexiones.getConexion().realeaseConnection(cnx);
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+		}		
+	}
 }

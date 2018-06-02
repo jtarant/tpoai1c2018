@@ -106,4 +106,13 @@ public class AdminListaRegalos {
 		Usuario usr = AdmPersistenciaUsuarios.getInstancia().buscar(idUsuario);
 		return AdmPersistenciaListasRegalos.getInstancia().listarMisListas(usr);
 	}
+
+	public void dejarDeParticipar(int codigo) throws Exception 
+	{
+		ListaRegalos lista = this.buscar(codigo);
+		if (lista != null)
+		{
+			lista.quitarParticipante(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario());
+		}
+	}
 }

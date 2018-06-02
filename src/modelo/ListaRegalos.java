@@ -1,6 +1,5 @@
 package modelo;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -46,7 +45,6 @@ public class ListaRegalos
 
 	public ListaRegalos(int codigo, Usuario admin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, EstadoListaRegalos estado) throws Exception
 	{
-		// TODO: DUDA: Los controladores no pueden retornar entidades de negocio, solo Views (DTOs). Puedo desde un controlador usar otro? porque me va a devolver vistas, no entidades y me pierdo de aprovechar su coleccion interna de cache.
 		setCodigo(codigo);
 		setAdmin(admin);
 		setFechaAgasajo(fechaAgasajo);
@@ -151,5 +149,23 @@ public class ListaRegalos
 	public void eliminar() throws Exception 
 	{
 		AdmPersistenciaListasRegalos.getInstancia().eliminar(this);
+	}
+
+	public void quitarParticipante(String idUsuario) throws Exception 
+	{
+		try
+		{
+			if (this.participantes.get(idUsuario) == null)
+			{
+				throw new ExceptionDeNegocio("El usuario " + idUsuario + " no participa de la lista");
+			}
+			AdmPersistenciaListasRegalos.getInstancia().quitarParticipante(this.getCodigo(), idUsuario);
+			this.participantes.remove(idUsuario);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

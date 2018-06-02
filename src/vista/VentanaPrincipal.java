@@ -119,6 +119,26 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(table);
 		
 		btnSalir = new JButton("Salir");
+		btnSalir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				try
+				{
+					int opcion = JOptionPane.showConfirmDialog(null, "Seguro que queres darte de baja de la lista de regalos?", "Salir de la lista de regalos", JOptionPane.YES_NO_OPTION);
+					if (opcion == JOptionPane.YES_OPTION)
+					{
+						int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+						AdminListaRegalos.getInstancia().dejarDeParticipar(codigo);
+						LlenarGrilla();
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error al salir de la lista:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}				
+			}
+		});
 		btnSalir.setEnabled(false);
 		btnSalir.setBounds(367, 247, 89, 23);
 		contentPane.add(btnSalir);
