@@ -35,8 +35,7 @@ public class AdmPersistenciaListasRegalos {
 		ResultSet clavesGeneradas = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
-			cnx.setAutoCommit(false); /* Abro TRANSACCION */
+			cnx = PoolConexiones.getConexion().iniciarTransaccion();
 			/* DATOS DE LA LISTA */
 			PreparedStatement cmdSqlLista = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos (IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado) VALUES (?,?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
 			cmdSqlLista.setString(1, lista.getAdmin().getIdUsuario());
@@ -52,24 +51,14 @@ public class AdmPersistenciaListasRegalos {
 			{
 				lista.setCodigo(clavesGeneradas.getInt(1));
 			}
+			
 			/* PARTICIPANTES */
-			PreparedStatement cmdSqlParticipante = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.Participantes (CodigoLista,IdUsuario,FechaPago) VALUES (?,?,?);");
-			cmdSqlParticipante.setInt(1, lista.getCodigo());
+			AdmPersistenciaParticipantes admPart = AdmPersistenciaParticipantes.getInstancia();
 			for (Participante participante: lista.getParticipantes())
 			{
-				cmdSqlParticipante.setString(2, participante.getUsuario().getIdUsuario());
-				if (participante.getPagoRealizado())
-				{
-					cmdSqlParticipante.setTimestamp(3, new Timestamp(participante.getFechaPago().getTime()));
-				}
-				else
-				{
-					cmdSqlParticipante.setTimestamp(3, null);
-				}
-				cmdSqlParticipante.execute();
+				admPart.insertar(lista.getCodigo(), participante);
 			}
 			cnx.commit();
-			PoolConexiones.getConexion().realeaseConnection(cnx);
 		}
 		catch (Exception e)
 		{
@@ -79,8 +68,8 @@ public class AdmPersistenciaListasRegalos {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
-		}		
+			if (cnx != null) PoolConexiones.getConexion().finTransaccion(); 
+		}
 	}
 
 	public List<ListaResumenView> listarMisListas(Usuario usr) throws Exception 
@@ -141,17 +130,10 @@ public class AdmPersistenciaListasRegalos {
 				lista = new ListaRegalos(resultLista.getInt(1), admin, resultLista.getDate(3), resultLista.getString(4), resultLista.getFloat(5), resultLista.getDate(6), resultLista.getDate(7), EstadoListaRegalos.fromInt(resultLista.getInt(8)));
 				
 				/* PARTICIPANTES */
-				PreparedStatement cmdSqlParticipante = cnx.prepareStatement("SELECT IdUsuario,FechaPago FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
-				cmdSqlParticipante.setInt(1, lista.getCodigo());
-				ResultSet resultParticipantes = cmdSqlParticipante.executeQuery();
-
-				while (resultParticipantes.next())
+				List<Participante> ps = AdmPersistenciaParticipantes.getInstancia().obtenerDeLista(codigo);
+				for (Participante p: ps)
 				{
-					Usuario p = AdmPersistenciaUsuarios.getInstancia().buscar(resultParticipantes.getString(1));
-					if (p != null)
-					{
-						lista.agregarParticipante(p, resultParticipantes.getDate(2));
-					}
+					lista.agregarParticipante(p);
 				}				
 			}
 			PoolConexiones.getConexion().realeaseConnection(cnx);
@@ -168,23 +150,20 @@ public class AdmPersistenciaListasRegalos {
 		}		
 	}
 
-	public void eliminar(ListaRegalos lista) throws SQLException 
+	public void eliminar(ListaRegalos lista) throws Exception 
 	{
 		Connection cnx = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
-			cnx.setAutoCommit(false); /* Abro TRANSACCION */
+			cnx = PoolConexiones.getConexion().iniciarTransaccion();
 			/* ELIMINO PARTICIPANTES */
-			PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
-			cmdSqlParticipante.setInt(1, lista.getCodigo());
-			cmdSqlParticipante.execute();
+			AdmPersistenciaParticipantes.getInstancia().eliminarTodos(lista.getCodigo());
+			
 			/* ELIMINO LA LISTA */
 			PreparedStatement cmdSqlLista = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=?");
 			cmdSqlLista.setInt(1, lista.getCodigo());
 			cmdSqlLista.execute();
 			cnx.commit();
-			PoolConexiones.getConexion().realeaseConnection(cnx);
 		}
 		catch (Exception e)
 		{
@@ -194,30 +173,7 @@ public class AdmPersistenciaListasRegalos {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getConexion().finTransaccion(); 
 		}				
-	}
-
-	public void quitarParticipante(int codigo, String idUsuario) throws Exception 
-	{
-		Connection cnx = null;
-		try
-		{
-			cnx = PoolConexiones.getConexion().getConnection();
-			PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=? AND IdUsuario=?");
-			cmdSqlParticipante.setInt(1, codigo);
-			cmdSqlParticipante.setString(2, idUsuario);
-			cmdSqlParticipante.execute();
-			PoolConexiones.getConexion().realeaseConnection(cnx);
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			throw e;
-		}
-		finally
-		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
-		}		
 	}
 }

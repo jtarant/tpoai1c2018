@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class Participante 
 {
+	private ListaRegalos lista;
 	private Usuario usuario;
 	private Date fechaPago;
 
@@ -15,17 +16,23 @@ public class Participante
 	{
 		usuario = usr;
 	}
+	public void setLista(ListaRegalos listaRegalos) 
+	{
+		this.lista = listaRegalos;
+	}
 	
 	public Participante(Usuario usuario)
 	{
 		setUsuario(usuario);
 		setFechaPago(null);
+		setLista(null);
 	}
 	
 	public Participante(Usuario usuario, Date fechaPago)
 	{
 		setUsuario(usuario);
 		setFechaPago(fechaPago);
+		setLista(null);
 	}
 	
 	public Usuario getUsuario()
@@ -39,5 +46,9 @@ public class Participante
 	public Date getFechaPago()
 	{
 		return fechaPago;
+	}
+	public ListaRegalos getLista()
+	{
+		return lista;
 	}
 }

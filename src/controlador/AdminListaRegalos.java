@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import modelo.EstadoListaRegalos;
 import modelo.ExceptionDeNegocio;
 import modelo.ListaRegalos;
 import modelo.Usuario;
@@ -40,19 +41,26 @@ public class AdminListaRegalos {
 		}
 	}
 
-	public void modificar(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
+	public void modificar(int codigo, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, List<String> idParticipantes) throws Exception
 	{
 		try
 		{
-/*			Usuario usr = buscar(idUsuario);
-			usr.setPassword(password);
-			usr.setNombre(nombre);
-			usr.setApellido(apellido);
-			usr.setFechaNac(fechaNac);
-			usr.setEmail(email);
-			usr.actualizar();
-			usuarios.replace(usr.getIdUsuario(), usr);
-*/		}
+			ListaRegalos lista = buscar(codigo);
+			lista.setFechaAgasajo(fechaAgasajo);
+			lista.setNombreAgasajado(nombreAgasajado);
+			lista.setMontoPorParticipante(monto);
+			lista.setFechaInicio(fechaInicio);
+			lista.setFechaFin(fechaFin);
+			//lista.setEstado(EstadoListaRegalos.);
+
+			
+			
+			
+			
+			// ver de pasar la lista de participantes, sin pensar en los pagos. aca solo participan o no. para modificar un pago sera otro metodo
+			lista.actualizar();
+			listas.replace(lista.getCodigo(), lista);
+		}
 		catch (Exception e)
 		{
 			throw e;

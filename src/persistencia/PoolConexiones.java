@@ -1,9 +1,7 @@
 package persistencia;
 
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -16,6 +14,7 @@ public class PoolConexiones
 	protected String password;
 	protected int cantCon;
 	private static PoolConexiones pool;
+	private static Connection cnxTransaccion;
 	
 	private PoolConexiones()
 	{
@@ -23,11 +22,12 @@ public class PoolConexiones
 		// Abre n conexiones y las mete en el pool (array)
 		for (int i= 0; i< cantCon;i++)
 			connections.add(this.connect());
+		cnxTransaccion = null;
 	}
 	
 	public static PoolConexiones getConexion()
 	{
-		if (pool== null)
+		if (pool == null)
 			pool = new PoolConexiones();
 		return pool;
 	}
@@ -40,11 +40,6 @@ public class PoolConexiones
             String dbConnectString = jdbc + servidor; 
             Connection con = DriverManager.getConnection(dbConnectString, usuario, password);
             return con;
-		}
-		catch (SQLException e)
-		{
-			System.out.println("Mensaje Error: " + e.getMessage());
-			return null;
 		}
 		catch (Exception ex)
 		{
@@ -87,20 +82,47 @@ public class PoolConexiones
 				System.out.println("Mensaje Error: " + e.getMessage());
 			}
 		}
+		cnxTransaccion = null;
 	}
 	
-	public  Connection getConnection()
+	public Connection iniciarTransaccion() throws Exception
+	{
+		cnxTransaccion = getConnection();
+		cnxTransaccion.setAutoCommit(false);
+		return cnxTransaccion;
+	}
+	
+	public void finTransaccion()
+	{
+		realeaseConnection(cnxTransaccion);
+		cnxTransaccion = null;
+	}
+	
+	public Boolean enTransaccion()
+	{
+		return (cnxTransaccion != null);
+	}
+	
+	public Connection getConnection()
 	{
 		Connection c = null;
-		// Cuando piden conexion, devuelvo una del pool (y la quito del array)
-		if (connections.size() > 0)
-			c = connections.remove(0);
+		// Si estoy en una transaccion, me aseguro de devolver siempre la misma conexion
+		if (enTransaccion())
+		{
+			return cnxTransaccion;
+		}
 		else
 		{
-			c = connect();
-			System.out.println("Se acabaron las conexiones disponibles en el pool. Se creo conexion fuera del pool.");
+			// Cuando piden conexion, devuelvo una del pool (y la quito del array)
+			if (connections.size() > 0)
+				c = connections.remove(0);
+			else
+			{
+				c = connect();
+				System.out.println("Se acabaron las conexiones disponibles en el pool. Se creo conexion fuera del pool.");
+			}
+			return c;
 		}
-		return c;
 	}
 	
 	public void realeaseConnection(Connection c)

@@ -131,7 +131,15 @@ public class DatosListaRegalos extends JDialog {
 							}
 							else
 							{
-								// TODO: Modificacion de lista
+								AdminListaRegalos.getInstancia().modificar(
+										codigo, 
+										new SimpleDateFormat("dd/MM/yyyy").parse(mskFechaAgasajo.getText()), 
+										txtNombreAgasajado.getText(), 
+										Float.parseFloat(mskMonto.getText()), 
+										new SimpleDateFormat("dd/MM/yyyy").parse(mskFechaInicio.getText()), 
+										new SimpleDateFormat("dd/MM/yyyy").parse(mskFechaFin.getText()), 
+										participantes
+										);
 							}						
 							setVisible(false);
 						}

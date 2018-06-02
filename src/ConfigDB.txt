@@ -1,5 +1,5 @@
 jdbc=jdbc:sqlserver://
-servidor=BUEL44617:1433
+servidor=jose-desktop:1433
 usuario=tpoai
 password=tpoai
 conexiones=3

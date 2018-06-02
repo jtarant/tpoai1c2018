@@ -38,7 +38,7 @@ public class ListaRegalos
 		for (String idParticipante : idParticipantes)
 		{
 			Usuario usr = AdmPersistenciaUsuarios.getInstancia().buscar(idParticipante);
-			agregarParticipante(usr, null);
+			agregarParticipante(new Participante(usr));
 		}
 		AdmPersistenciaListasRegalos.getInstancia().insertar(this);
 	}
@@ -88,13 +88,17 @@ public class ListaRegalos
 	{
 		this.estado = estado;
 	}
-	public void agregarParticipante(Usuario usr, Date fechaPagado)
+	public void agregarParticipante(Participante p)
 	{
 		// El admin no puede ser participante, asi que si lo agregan, lo ignoro
-		if (!usr.getIdUsuario().equals(getAdmin().getIdUsuario()))
+		if (!p.getUsuario().getIdUsuario().equals(getAdmin().getIdUsuario()))
 		{
-			Participante participante = new Participante(usr, fechaPagado);
-			participantes.put(usr.getIdUsuario(), participante);
+			// Y solo lo agrego si no lo tenia ya en la lista
+			if (participantes.get(p.getUsuario().getIdUsuario()) == null)
+			{
+				p.setLista(this);
+				participantes.put(p.getUsuario().getIdUsuario(), p);
+			}
 		}
 	}
 	public int getCodigo()
@@ -150,22 +154,23 @@ public class ListaRegalos
 	{
 		AdmPersistenciaListasRegalos.getInstancia().eliminar(this);
 	}
-
-	public void quitarParticipante(String idUsuario) throws Exception 
+	
+	public void actualizar()
 	{
-		try
+		
+		
+	}
+
+	public void quitarParticipante(String idUsuario) throws ExceptionDeNegocio 
+	{
+		Participante p = participantes.get(idUsuario);
+		if (p == null)
 		{
-			if (this.participantes.get(idUsuario) == null)
-			{
-				throw new ExceptionDeNegocio("El usuario " + idUsuario + " no participa de la lista");
-			}
-			AdmPersistenciaListasRegalos.getInstancia().quitarParticipante(this.getCodigo(), idUsuario);
-			this.participantes.remove(idUsuario);
+			throw new ExceptionDeNegocio("El usuario " + idUsuario + " no participa de esta lista");
 		}
-		catch (Exception e)
+		else
 		{
-			e.printStackTrace();
-			throw e;
+			this.participantes.remove(idUsuario);
 		}
 	}
 }

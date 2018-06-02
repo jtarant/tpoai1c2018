@@ -176,7 +176,7 @@ public class VentanaPrincipal extends JFrame {
 				catch (Exception e)
 				{
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Error al cargar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error al actualizar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
