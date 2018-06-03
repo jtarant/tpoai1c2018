@@ -30,7 +30,7 @@ public class AdmPersistenciaUsuarios {
 		Connection cnx = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			PreparedStatement cmdSql = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.USUARIOS (IdUsuario,Password,Nombre,Apellido,FechaNac,Email,Activo) VALUES (?,?,?,?,?,?,?)");
 			cmdSql.setString(1, usr.getIdUsuario());
 			cmdSql.setString(2, usr.getPassword());
@@ -40,7 +40,7 @@ public class AdmPersistenciaUsuarios {
 			cmdSql.setString(6, usr.getEmail());
 			cmdSql.setBoolean(7, usr.getActivo());
 			cmdSql.execute();
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 		}
 		catch (Exception e)
 		{
@@ -49,7 +49,7 @@ public class AdmPersistenciaUsuarios {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}		
 	}
 
@@ -59,7 +59,7 @@ public class AdmPersistenciaUsuarios {
 		Usuario usr = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			PreparedStatement cmdSql = cnx.prepareStatement("SELECT * FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE idUsuario=? AND Activo=1");
 			cmdSql.setString(1, idUsuario);
 			ResultSet result = cmdSql.executeQuery();
@@ -74,7 +74,7 @@ public class AdmPersistenciaUsuarios {
 				Boolean activo = result.getBoolean(7);
 				usr = new Usuario(idUsr,password,nombre,apellido,fNac,email,activo);
 			}
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 			return usr;
 		}
 		catch (Exception e)
@@ -84,7 +84,7 @@ public class AdmPersistenciaUsuarios {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}		
 	}
 
@@ -94,7 +94,7 @@ public class AdmPersistenciaUsuarios {
 		List<Usuario> lista = new ArrayList<Usuario>();
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			PreparedStatement cmdSql = cnx.prepareStatement("SELECT IdUsuario,Nombre,Apellido FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo=1 ORDER BY IdUsuario");
 			ResultSet result = cmdSql.executeQuery();
 			while (result.next())
@@ -105,7 +105,7 @@ public class AdmPersistenciaUsuarios {
 				Usuario usr = new Usuario(idUsr,null,nombre,apellido,null,null,true);
 				lista.add(usr);
 			}
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 			return lista;
 		}
 		catch (Exception e)
@@ -115,7 +115,7 @@ public class AdmPersistenciaUsuarios {
 		}				
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}
 	}
 
@@ -124,7 +124,7 @@ public class AdmPersistenciaUsuarios {
 		Connection cnx = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			PreparedStatement cmdSql = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.USUARIOS SET Password=?,Nombre=?,Apellido=?,FechaNac=?,Email=?,Activo=? WHERE IdUsuario=?");
 			cmdSql.setString(1, usr.getPassword());
 			cmdSql.setString(2, usr.getNombre());
@@ -134,7 +134,7 @@ public class AdmPersistenciaUsuarios {
 			cmdSql.setBoolean(6, usr.getActivo());
 			cmdSql.setString(7, usr.getIdUsuario());		
 			cmdSql.execute();
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 		}
 		catch (Exception e)
 		{
@@ -143,7 +143,7 @@ public class AdmPersistenciaUsuarios {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}
 	}
 
@@ -152,7 +152,7 @@ public class AdmPersistenciaUsuarios {
 		Connection cnx = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			PreparedStatement cmdSql;
 			try 
 			{
@@ -172,7 +172,7 @@ public class AdmPersistenciaUsuarios {
 				}
 				else throw se;
 			}
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 		}
 		catch (Exception e)
 		{
@@ -181,7 +181,7 @@ public class AdmPersistenciaUsuarios {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}
 	}
 
@@ -190,10 +190,10 @@ public class AdmPersistenciaUsuarios {
 		Connection cnx = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			PreparedStatement cmdSql = cnx.prepareStatement("SELECT COUNT(*) FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo=1");
 			ResultSet result = cmdSql.executeQuery();
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 			result.next();
 			return result.getInt(1);
 		}
@@ -204,7 +204,7 @@ public class AdmPersistenciaUsuarios {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}
 	}
 }

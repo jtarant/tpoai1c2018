@@ -145,6 +145,7 @@ public class DatosListaRegalos extends JDialog {
 						}
 						catch (Exception e)
 						{
+							e.printStackTrace();
 							JOptionPane.showMessageDialog(null, "Error al guardar los cambios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					}					

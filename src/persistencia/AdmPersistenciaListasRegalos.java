@@ -35,7 +35,7 @@ public class AdmPersistenciaListasRegalos {
 		ResultSet clavesGeneradas = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().iniciarTransaccion();
+			cnx = PoolConexiones.getInstancia().iniciarTransaccion();
 			/* DATOS DE LA LISTA */
 			PreparedStatement cmdSqlLista = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos (IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado) VALUES (?,?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
 			cmdSqlLista.setString(1, lista.getAdmin().getIdUsuario());
@@ -68,7 +68,7 @@ public class AdmPersistenciaListasRegalos {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().finTransaccion(); 
+			if (cnx != null) PoolConexiones.getInstancia().finTransaccion(); 
 		}
 	}
 
@@ -79,7 +79,7 @@ public class AdmPersistenciaListasRegalos {
 
 		try
 		{
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			String sql = "SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado " + 
 					"FROM [TPO_AI_TARANTINO_CALISI].[dbo].[ListasRegalos] WHERE IdUsuarioAdmin=? " + 
 					"UNION " + 
@@ -98,7 +98,7 @@ public class AdmPersistenciaListasRegalos {
 				lst = new ListaResumenView(result.getInt(1), result.getString(2), result.getDate(3), result.getString(4), result.getFloat(5), result.getDate(6), result.getDate(7), result.getInt(8));
 				listas.add(lst);
 			}
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 			return listas;
 		}
 		catch (Exception e)
@@ -108,7 +108,7 @@ public class AdmPersistenciaListasRegalos {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}		
 	}
 
@@ -119,7 +119,7 @@ public class AdmPersistenciaListasRegalos {
 		{
 			ListaRegalos lista = null;
 			
-			cnx = PoolConexiones.getConexion().getConnection();
+			cnx = PoolConexiones.getInstancia().getConnection();
 			/* DATOS DE LA LISTA */
 			PreparedStatement cmdSqlLista = cnx.prepareStatement("SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=?");
 			cmdSqlLista.setInt(1, codigo);
@@ -134,9 +134,10 @@ public class AdmPersistenciaListasRegalos {
 				for (Participante p: ps)
 				{
 					lista.agregarParticipante(p);
-				}				
+				}
+				lista.resetearCambiosParticipantes();
 			}
-			PoolConexiones.getConexion().realeaseConnection(cnx);
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
 			return lista;
 		}
 		catch (Exception e)
@@ -146,7 +147,7 @@ public class AdmPersistenciaListasRegalos {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().realeaseConnection(cnx); 
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}		
 	}
 
@@ -155,7 +156,7 @@ public class AdmPersistenciaListasRegalos {
 		Connection cnx = null;
 		try
 		{
-			cnx = PoolConexiones.getConexion().iniciarTransaccion();
+			cnx = PoolConexiones.getInstancia().iniciarTransaccion();
 			/* ELIMINO PARTICIPANTES */
 			AdmPersistenciaParticipantes.getInstancia().eliminarTodos(lista.getCodigo());
 			
@@ -173,7 +174,46 @@ public class AdmPersistenciaListasRegalos {
 		}
 		finally
 		{
-			if (cnx != null) PoolConexiones.getConexion().finTransaccion(); 
+			if (cnx != null) PoolConexiones.getInstancia().finTransaccion(); 
 		}				
+	}
+
+	public void actualizar(ListaRegalos lista) throws Exception 
+	{
+		Connection cnx = null;
+		try
+		{
+			cnx = PoolConexiones.getInstancia().iniciarTransaccion();
+			/* ACTUALIZACION DE PARTICIPANTES */
+			for (Participante nuevo : lista.getParticipantesNuevos())
+			{
+				AdmPersistenciaParticipantes.getInstancia().insertar(lista.getCodigo(), nuevo);
+			}
+			for (Participante baja : lista.getParticipantesEliminados())
+			{
+				AdmPersistenciaParticipantes.getInstancia().eliminar(baja);
+			}
+			/* ACTUALIZACION DE LA LISTA */
+			PreparedStatement cmdSqlLista = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos SET FechaAgasajo=?, NombreAgasajado=?, MontoPorParticipante=?, FechaInicio=?, FechaFin=?, Estado=? WHERE CodigoLista=?");
+			cmdSqlLista.setTimestamp(1, new Timestamp(lista.getFechaAgasajo().getTime()));
+			cmdSqlLista.setString(2, lista.getNombreAgasajado());
+			cmdSqlLista.setFloat(3, lista.getMontoPorParticipante());
+			cmdSqlLista.setTimestamp(4, new Timestamp(lista.getFechaInicio().getTime()));
+			cmdSqlLista.setTimestamp(5, new Timestamp(lista.getFechaFin().getTime()));
+			cmdSqlLista.setInt(6, lista.getEstado().getValor());
+			cmdSqlLista.setInt(7, lista.getCodigo());
+			cmdSqlLista.execute();
+			cnx.commit();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			if (cnx != null) cnx.rollback();
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getInstancia().finTransaccion(); 
+		}						
 	}
 }

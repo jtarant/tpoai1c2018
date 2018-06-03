@@ -1,12 +1,16 @@
 package controlador;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 import modelo.EstadoListaRegalos;
 import modelo.ExceptionDeNegocio;
 import modelo.ListaRegalos;
+import modelo.Participante;
 import modelo.Usuario;
 import persistencia.AdmPersistenciaListasRegalos;
 import persistencia.AdmPersistenciaUsuarios;
@@ -51,13 +55,39 @@ public class AdminListaRegalos {
 			lista.setMontoPorParticipante(monto);
 			lista.setFechaInicio(fechaInicio);
 			lista.setFechaFin(fechaFin);
-			//lista.setEstado(EstadoListaRegalos.);
+			
+			// Quito los participantes que ya no van a estar
+			List<Participante> copiaParticipantes = new ArrayList<Participante>(lista.getParticipantes());
+			for (Participante p: copiaParticipantes)
+			{
+				Boolean sigueEstando = false;
+				Iterator<String> i = idParticipantes.iterator();
+				while (i.hasNext() && !sigueEstando) 
+				{
+					String id = (String)i.next();
+					if (id.equals(p.getUsuario().getIdUsuario())) sigueEstando = true;
+				}
+				if (!sigueEstando)
+				{
+					System.out.println("se quito: " + p.getUsuario().getIdUsuario());
+					lista.quitarParticipante(p.getUsuario().getIdUsuario());
+				}
+			}
 
+			// Agrego los participantes que no esten actualmente
+			for	(String idParticipante : idParticipantes)
+			{
+				if (lista.getParticipante(idParticipante) == null)
+				{
+					Usuario usr = AdmPersistenciaUsuarios.getInstancia().buscar(idParticipante);
+					if (usr != null)
+					{
+						System.out.println("se agrego: " + usr.getIdUsuario());
+						lista.agregarParticipante(new Participante(usr));
+					}
+				}
+			}
 			
-			
-			
-			
-			// ver de pasar la lista de participantes, sin pensar en los pagos. aca solo participan o no. para modificar un pago sera otro metodo
 			lista.actualizar();
 			listas.replace(lista.getCodigo(), lista);
 		}
@@ -121,6 +151,7 @@ public class AdminListaRegalos {
 		if (lista != null)
 		{
 			lista.quitarParticipante(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario());
+			lista.actualizar();
 		}
 	}
 }

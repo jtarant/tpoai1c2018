@@ -2,6 +2,7 @@ package persistencia;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -19,13 +20,13 @@ public class PoolConexiones
 	private PoolConexiones()
 	{
 		getConfiguration();
+		cnxTransaccion = null;		
 		// Abre n conexiones y las mete en el pool (array)
 		for (int i= 0; i< cantCon;i++)
 			connections.add(this.connect());
-		cnxTransaccion = null;
 	}
 	
-	public static PoolConexiones getConexion()
+	public static PoolConexiones getInstancia()
 	{
 		if (pool == null)
 			pool = new PoolConexiones();
@@ -92,8 +93,9 @@ public class PoolConexiones
 		return cnxTransaccion;
 	}
 	
-	public void finTransaccion()
+	public void finTransaccion() throws SQLException
 	{
+		cnxTransaccion.setAutoCommit(true);
 		realeaseConnection(cnxTransaccion);
 		cnxTransaccion = null;
 	}

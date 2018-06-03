@@ -15,6 +15,9 @@ public class ListaRegalos
 {
 	private Usuario admin;
 	private Hashtable<String,Participante> participantes;
+	private List<Participante> nuevos;
+	private List<Participante> modificados;
+	private List<Participante> eliminados;
 	private int codigo;
 	private Date fechaAgasajo;
 	private String nombreAgasajado;
@@ -25,6 +28,8 @@ public class ListaRegalos
 	
 	public ListaRegalos(String idUsuarioAdmin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, List<String> idParticipantes) throws Exception
 	{
+		participantes = new Hashtable<String,Participante>();
+		resetearCambiosParticipantes();
 		Usuario admin = AdmPersistenciaUsuarios.getInstancia().buscar(idUsuarioAdmin);
 		setAdmin(admin);
 		setFechaAgasajo(fechaAgasajo);
@@ -34,17 +39,19 @@ public class ListaRegalos
 		setFechaFin(fechaFin);
 		setEstado(EstadoListaRegalos.ABIERTA);
 		
-		participantes = new Hashtable<String,Participante>();
 		for (String idParticipante : idParticipantes)
 		{
 			Usuario usr = AdmPersistenciaUsuarios.getInstancia().buscar(idParticipante);
 			agregarParticipante(new Participante(usr));
 		}
 		AdmPersistenciaListasRegalos.getInstancia().insertar(this);
+		resetearCambiosParticipantes();
 	}
 
 	public ListaRegalos(int codigo, Usuario admin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, EstadoListaRegalos estado) throws Exception
 	{
+		participantes = new Hashtable<String,Participante>();
+		resetearCambiosParticipantes();
 		setCodigo(codigo);
 		setAdmin(admin);
 		setFechaAgasajo(fechaAgasajo);
@@ -53,7 +60,6 @@ public class ListaRegalos
 		setFechaInicio(fechaInicio);
 		setFechaFin(fechaFin);
 		setEstado(estado);
-		participantes = new Hashtable<String,Participante>();
 	}
 	
 	public void setAdmin(Usuario usr)
@@ -88,6 +94,7 @@ public class ListaRegalos
 	{
 		this.estado = estado;
 	}
+	
 	public void agregarParticipante(Participante p)
 	{
 		// El admin no puede ser participante, asi que si lo agregan, lo ignoro
@@ -98,9 +105,25 @@ public class ListaRegalos
 			{
 				p.setLista(this);
 				participantes.put(p.getUsuario().getIdUsuario(), p);
+				this.nuevos.add(p);
 			}
 		}
 	}
+	
+	public void quitarParticipante(String idUsuario) throws ExceptionDeNegocio 
+	{
+		Participante p = participantes.get(idUsuario);
+		if (p == null)
+		{
+			throw new ExceptionDeNegocio("El usuario " + idUsuario + " no participa de esta lista");
+		}
+		else
+		{
+			this.participantes.remove(idUsuario);
+			this.eliminados.add(p);
+		}
+	}
+	
 	public int getCodigo()
 	{
 		return codigo;
@@ -133,10 +156,15 @@ public class ListaRegalos
 	{
 		return estado;
 	}
+	public Participante getParticipante(String idUsuario)
+	{
+		return participantes.get(idUsuario);
+	}
 	public Collection<Participante> getParticipantes()
 	{
 		return participantes.values();
 	}
+	
 	public ListaRegalosView getView()
 	{
 		List<ParticipanteView> partv = new ArrayList<ParticipanteView>();
@@ -155,22 +183,43 @@ public class ListaRegalos
 		AdmPersistenciaListasRegalos.getInstancia().eliminar(this);
 	}
 	
-	public void actualizar()
+	public void actualizar() throws Exception
 	{
-		
-		
+		AdmPersistenciaListasRegalos.getInstancia().actualizar(this);
+		resetearCambiosParticipantes();
 	}
-
-	public void quitarParticipante(String idUsuario) throws ExceptionDeNegocio 
+	
+	public List<Participante> getParticipantesNuevos()
 	{
-		Participante p = participantes.get(idUsuario);
-		if (p == null)
-		{
-			throw new ExceptionDeNegocio("El usuario " + idUsuario + " no participa de esta lista");
-		}
-		else
-		{
-			this.participantes.remove(idUsuario);
-		}
+		return nuevos;
 	}
+	
+	public List<Participante> getParticipantesModificados()
+	{
+		return modificados;
+	}
+	
+	public List<Participante> getParticipantesEliminados()
+	{
+		return eliminados;
+	}
+	
+	public void resetearCambiosParticipantes()
+	{
+		if (nuevos == null)
+		{
+			nuevos = new ArrayList<Participante>();
+		} 
+		else nuevos.clear();
+		if (modificados == null)
+		{
+			modificados = new ArrayList<Participante>();
+		} 
+		else modificados.clear();
+		if (eliminados == null)
+		{
+			eliminados = new ArrayList<Participante>();
+		}
+		else eliminados.clear();
+	}	
 }

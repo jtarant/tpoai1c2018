@@ -28,7 +28,7 @@ public class AdmPersistenciaParticipantes
 	
 	public void insertar(int codigoLista, Participante p) throws Exception
 	{
-		Connection cnx = PoolConexiones.getConexion().getConnection();
+		Connection cnx = PoolConexiones.getInstancia().getConnection();
 		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.Participantes (CodigoLista,IdUsuario,FechaPago) VALUES (?,?,?);");
 		cmdSqlParticipante.setInt(1, codigoLista);
 		cmdSqlParticipante.setString(2, p.getUsuario().getIdUsuario());
@@ -41,14 +41,14 @@ public class AdmPersistenciaParticipantes
 			cmdSqlParticipante.setTimestamp(3, null);
 		}
 		cmdSqlParticipante.execute();
-		if (!PoolConexiones.getConexion().enTransaccion()) PoolConexiones.getConexion().realeaseConnection(cnx);
+		if (!PoolConexiones.getInstancia().enTransaccion()) PoolConexiones.getInstancia().realeaseConnection(cnx);
 	}
 	
 	public List<Participante> obtenerDeLista(int codigoLista) throws Exception
 	{
 		List<Participante> resultado = new ArrayList<Participante>();
 		
-		Connection cnx = PoolConexiones.getConexion().getConnection();
+		Connection cnx = PoolConexiones.getInstancia().getConnection();
 		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("SELECT IdUsuario,FechaPago FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
 		cmdSqlParticipante.setInt(1, codigoLista);
 		ResultSet resultParticipantes = cmdSqlParticipante.executeQuery();
@@ -61,27 +61,27 @@ public class AdmPersistenciaParticipantes
 				resultado.add(new Participante(p, resultParticipantes.getDate(2)));
 			}
 		}
-		if (!PoolConexiones.getConexion().enTransaccion()) PoolConexiones.getConexion().realeaseConnection(cnx);		
+		if (!PoolConexiones.getInstancia().enTransaccion()) PoolConexiones.getInstancia().realeaseConnection(cnx);		
 		return resultado;
 	}
 	
 	public void eliminar(Participante p) throws SQLException
 	{
-		Connection cnx = PoolConexiones.getConexion().getConnection();
+		Connection cnx = PoolConexiones.getInstancia().getConnection();
 		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=? AND IdUsuario=?");		
 		cmdSqlParticipante.setInt(1, p.getLista().getCodigo());
 		cmdSqlParticipante.setString(2, p.getUsuario().getIdUsuario());
 		cmdSqlParticipante.execute();
-		if (!PoolConexiones.getConexion().enTransaccion()) PoolConexiones.getConexion().realeaseConnection(cnx);		
+		if (!PoolConexiones.getInstancia().enTransaccion()) PoolConexiones.getInstancia().realeaseConnection(cnx);		
 	}
 		
 	public void eliminarTodos(int codigoLista) throws Exception
 	{
-		Connection cnx = PoolConexiones.getConexion().getConnection();
+		Connection cnx = PoolConexiones.getInstancia().getConnection();
 		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
 		cmdSqlParticipante.setInt(1, codigoLista);
 		cmdSqlParticipante.execute();
-		if (!PoolConexiones.getConexion().enTransaccion()) PoolConexiones.getConexion().realeaseConnection(cnx);		
+		if (!PoolConexiones.getInstancia().enTransaccion()) PoolConexiones.getInstancia().realeaseConnection(cnx);		
 	}
 
 }
