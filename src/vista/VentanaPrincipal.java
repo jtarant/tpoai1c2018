@@ -1,9 +1,11 @@
 package vista;
 
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -100,6 +102,7 @@ public class VentanaPrincipal extends JFrame {
 			public void actionPerformed(ActionEvent e) 
 			{
 				DatosListaRegalos formListaRegalos = new DatosListaRegalos();
+				formListaRegalos.setLocationRelativeTo(null);
 				formListaRegalos.setVisible(true);
 				if (!formListaRegalos.getCancelado())
 				{
@@ -118,7 +121,7 @@ public class VentanaPrincipal extends JFrame {
 		table.setAutoscrolls(true);
 		contentPane.add(table);
 		
-		btnSalir = new JButton("Salir");
+		btnSalir = new JButton("Abandonar");
 		btnSalir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -135,12 +138,12 @@ public class VentanaPrincipal extends JFrame {
 				catch (Exception e)
 				{
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Error al salir de la lista:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error al abandonar de la lista:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}				
 			}
 		});
 		btnSalir.setEnabled(false);
-		btnSalir.setBounds(367, 247, 89, 23);
+		btnSalir.setBounds(358, 247, 98, 23);
 		contentPane.add(btnSalir);
 		
 		btnModificar = new JButton("Modificar");
@@ -166,6 +169,7 @@ public class VentanaPrincipal extends JFrame {
 						participantes.add(p.getIdUsuario());
 					}				
 					formListaRegalos.setIdUsuariosParticipantes(participantes);
+					formListaRegalos.setLocationRelativeTo(null);
 					formListaRegalos.setVisible(true);
 					if (!formListaRegalos.getCancelado())
 					{
@@ -254,6 +258,7 @@ public class VentanaPrincipal extends JFrame {
 	private void Login()
 	{
 		Login formLogin = new Login();
+		formLogin.setLocationRelativeTo(null);
 		formLogin.setVisible(true);
 		formLogin.dispose();
 		

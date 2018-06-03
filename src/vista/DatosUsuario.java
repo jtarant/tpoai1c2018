@@ -148,6 +148,7 @@ public class DatosUsuario extends JDialog {
 		});
 		
 		btnAceptar.setBounds(243, 237, 89, 23);
+		btnAceptar.setActionCommand("OK");
 		contentPane.add(btnAceptar);
 		
 		JButton btnCancelar = new JButton("Cancelar");
@@ -159,7 +160,9 @@ public class DatosUsuario extends JDialog {
 			}
 		});
 		btnCancelar.setBounds(342, 237, 89, 23);
+		btnCancelar.setActionCommand("Cancel");
 		contentPane.add(btnCancelar);
+		getRootPane().setDefaultButton(btnAceptar);
 		this.LimpiarCampos();
 		cancelado = false;
 		modoEdicion = false;
