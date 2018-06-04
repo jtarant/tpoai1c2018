@@ -1,6 +1,7 @@
 package vista;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -31,7 +32,10 @@ import javax.swing.JButton;
 import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.FlowLayout;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -94,7 +98,17 @@ public class VentanaPrincipal extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panelSup = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panelSup.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		panelSup.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		contentPane.add(panelSup, BorderLayout.PAGE_START);
+		JPanel panelInf = new JPanel();
+		FlowLayout flowLayout_1 = (FlowLayout) panelInf.getLayout();
+		flowLayout_1.setAlignment(FlowLayout.TRAILING);
+		contentPane.add(panelInf, BorderLayout.PAGE_END);
 		
 		btnNuevaLista = new JButton("Nueva Lista");
 		btnNuevaLista.setFont(new Font("Tahoma", Font.PLAIN, 11));
@@ -111,15 +125,17 @@ public class VentanaPrincipal extends JFrame {
 				formListaRegalos.dispose();
 			}
 		});
-		btnNuevaLista.setBounds(10, 11, 105, 23);
-		contentPane.add(btnNuevaLista);
+		panelSup.add(btnNuevaLista);
 		
 		table = new JTable();
-		table.setBounds(10, 45, 644, 191);
+		table.setFillsViewportHeight(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setDefaultEditor(Object.class, null);
 		table.setAutoscrolls(true);
-		contentPane.add(table);
+		JScrollPane scrollpane = new JScrollPane(table);
+		scrollpane.add(table.getTableHeader());
+		table.getTableHeader().setReorderingAllowed(false);
+		contentPane.add(scrollpane, BorderLayout.CENTER);
 		
 		btnSalir = new JButton("Abandonar");
 		btnSalir.addActionListener(new ActionListener() {
@@ -143,8 +159,7 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		btnSalir.setEnabled(false);
-		btnSalir.setBounds(358, 247, 98, 23);
-		contentPane.add(btnSalir);
+		panelInf.add(btnSalir);
 		
 		btnModificar = new JButton("Modificar");
 		btnModificar.setEnabled(false);
@@ -184,8 +199,7 @@ public class VentanaPrincipal extends JFrame {
 				}
 			}
 		});
-		btnModificar.setBounds(466, 247, 89, 23);
-		contentPane.add(btnModificar);
+		panelInf.add(btnModificar);
 		
 		btnEliminar = new JButton("Eliminar");
 		btnEliminar.addActionListener(new ActionListener() {
@@ -209,12 +223,11 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		btnEliminar.setEnabled(false);
-		btnEliminar.setBounds(565, 247, 89, 23);
-		contentPane.add(btnEliminar);
+		panelInf.add(btnEliminar);
 		
 		lblNombreUsuario = new JLabel("");
-		lblNombreUsuario.setBounds(367, 11, 287, 18);
-		contentPane.add(lblNombreUsuario);
+		lblNombreUsuario.setHorizontalAlignment(SwingConstants.CENTER);
+		panelSup.add(lblNombreUsuario);
 		
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -267,6 +280,7 @@ public class VentanaPrincipal extends JFrame {
 		{
 			lblNombreUsuario.setText("Hola " + usrLogueado.getApellido() + ", " + usrLogueado.getNombre());
 			btnNuevaLista.setEnabled(true);
+			table.setEnabled(true);
 			LlenarGrilla();
 		}
 		else
