@@ -258,6 +258,10 @@ public class DatosListaRegalos extends JDialog {
 		}
 		mskFechaFin.setBounds(187, 134, 81, 20);
 		contentPanel.add(mskFechaFin);
+		
+		JLabel lblMontoRecaudado = new JLabel("Monto recaudado ($): 0.0");
+		lblMontoRecaudado.setBounds(315, 73, 234, 14);
+		contentPanel.add(lblMontoRecaudado);
 		cancelado = false;
 		modoEdicion = false;
 		LimpiarCampos();

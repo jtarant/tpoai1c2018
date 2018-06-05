@@ -14,8 +14,9 @@ public class Usuario {
 	private Date fechaNac;
 	private String email;
 	private Boolean activo;
+	private Boolean sysAdmin;
 	
-	public Usuario(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
+	public Usuario(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email, Boolean sysAdmin) throws Exception
 	{
 		this.setIdUsuario(idUsuario);
 		this.setPassword(password);
@@ -24,10 +25,11 @@ public class Usuario {
 		this.setFechaNac(fechaNac);
 		this.setEmail(email);
 		this.activo = true;
+		this.setSysAdmin(sysAdmin);
 		AdmPersistenciaUsuarios.getInstancia().insertar(this);
 	}
 	
-	public Usuario(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email, Boolean activo)
+	public Usuario(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email, Boolean activo, Boolean sysAdmin)
 	{
 		this.setIdUsuario(idUsuario);
 		this.setPassword(password);
@@ -36,6 +38,7 @@ public class Usuario {
 		this.setFechaNac(fechaNac);
 		this.setEmail(email);
 		this.setActivo(activo);
+		this.setSysAdmin(sysAdmin);
 	}
 	
 	public void setIdUsuario(String u)
@@ -66,6 +69,10 @@ public class Usuario {
 	{
 		activo = a;
 	}
+	public void setSysAdmin(Boolean sa)
+	{
+		sysAdmin = sa;
+	}
 	public String getIdUsuario()
 	{
 		return idUsuario.trim().toLowerCase();
@@ -94,9 +101,13 @@ public class Usuario {
 	{
 		return activo;
 	}
+	public Boolean getSysAdmin()
+	{
+		return sysAdmin;
+	}
 	public UsuarioView getView()
 	{
-		return new UsuarioView(getIdUsuario(),getPassword(),getNombre(),getApellido(),getFechaNac(),getEmail());
+		return new UsuarioView(getIdUsuario(),getPassword(),getNombre(),getApellido(),getFechaNac(),getEmail(),getSysAdmin());
 	}
 	public UsuarioIdNombreView getIDNombreView()
 	{

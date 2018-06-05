@@ -9,8 +9,9 @@ public class UsuarioView {
 		private String apellido;
 		private Date fechaNac;
 		private String email;
+		private Boolean sysAdmin;
 		
-		public UsuarioView(String id, String pwd, String n, String a, Date fn, String e)
+		public UsuarioView(String id, String pwd, String n, String a, Date fn, String e, Boolean sa)
 		{
 			idUsuario = id;
 			password = pwd;
@@ -18,6 +19,7 @@ public class UsuarioView {
 			apellido = a;
 			fechaNac = fn;
 			email = e;
+			sysAdmin = sa;
 		}
 		
 		public String getIdUsuario()
@@ -43,5 +45,9 @@ public class UsuarioView {
 		public String getEmail()
 		{
 			return email;
+		}
+		public Boolean getSysAdmin()
+		{
+			return sysAdmin;
 		}
 }

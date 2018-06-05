@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
 import controlador.AdminUsuarios;
+import controlador.UsuarioView;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,6 +21,7 @@ import javax.swing.JDialog;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JCheckBox;
 
 public class DatosUsuario extends JDialog {
 
@@ -32,11 +34,13 @@ public class DatosUsuario extends JDialog {
 	private JTextField txtEmail;
 	private Boolean modoEdicion;
 	private Boolean cancelado;
+	private JCheckBox chkSysAdmin;
 
 	/**
 	 * Create the frame.
+	 * @throws Exception 
 	 */
-	public DatosUsuario() {
+	public DatosUsuario() throws Exception {
 		setModal(true);
 		setResizable(false);
 		setTitle("Crear usuario");
@@ -122,7 +126,8 @@ public class DatosUsuario extends JDialog {
 								txtNombre.getText(), 
 								txtApellido.getText(),
 								new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
-								txtEmail.getText()
+								txtEmail.getText(),
+								chkSysAdmin.isSelected()
 								);
 						}
 						else
@@ -133,7 +138,8 @@ public class DatosUsuario extends JDialog {
 									txtNombre.getText(), 
 									txtApellido.getText(),
 									new SimpleDateFormat("dd/MM/yyyy").parse(mskFNac.getText()),
-									txtEmail.getText()
+									txtEmail.getText(),
+									chkSysAdmin.isSelected()
 									);
 						}						
 						setVisible(false);
@@ -147,7 +153,7 @@ public class DatosUsuario extends JDialog {
 			}
 		});
 		
-		btnAceptar.setBounds(243, 237, 89, 23);
+		btnAceptar.setBounds(263, 250, 89, 23);
 		btnAceptar.setActionCommand("OK");
 		contentPane.add(btnAceptar);
 		
@@ -159,10 +165,37 @@ public class DatosUsuario extends JDialog {
 				setVisible(false);
 			}
 		});
-		btnCancelar.setBounds(342, 237, 89, 23);
+		btnCancelar.setBounds(362, 250, 89, 23);
 		btnCancelar.setActionCommand("Cancel");
 		contentPane.add(btnCancelar);
 		getRootPane().setDefaultButton(btnAceptar);
+		
+		JLabel lblAdminSistema = new JLabel("Admin Sistema");
+		lblAdminSistema.setBounds(10, 224, 121, 14);
+		contentPane.add(lblAdminSistema);
+		
+		chkSysAdmin = new JCheckBox("");
+		chkSysAdmin.setBounds(141, 220, 97, 23);
+		UsuarioView usrLogueado = AdminUsuarios.getInstancia().getUsuarioLogueado(); 
+		if ((usrLogueado != null) && (usrLogueado.getSysAdmin()))
+		{
+			chkSysAdmin.setSelected(false);
+			chkSysAdmin.setEnabled(true);
+		}
+		else
+		{
+			if (AdminUsuarios.getInstancia().getCantidadUsuarios() == 0)
+			{
+				chkSysAdmin.setSelected(true);
+				chkSysAdmin.setEnabled(false);
+			}
+			else
+			{
+				chkSysAdmin.setSelected(false);
+				chkSysAdmin.setEnabled(false);				
+			}
+		}
+		contentPane.add(chkSysAdmin);
 		this.LimpiarCampos();
 		cancelado = false;
 		modoEdicion = false;
@@ -194,6 +227,10 @@ public class DatosUsuario extends JDialog {
 	public void setEmail(String e)
 	{
 		txtEmail.setText(e);
+	}
+	public void setSysAdmin(Boolean sa)
+	{
+		chkSysAdmin.setSelected(sa);
 	}
 	public Boolean getCancelado()
 	{

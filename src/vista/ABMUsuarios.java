@@ -53,6 +53,7 @@ public class ABMUsuarios extends JDialog {
 				try 
 				{
 					DatosUsuario formDatosUsuario = new DatosUsuario();
+					formDatosUsuario.setLocationRelativeTo(null);
 					formDatosUsuario.setVisible(true);
 					if (!formDatosUsuario.getCancelado())
 					{
@@ -85,6 +86,8 @@ public class ABMUsuarios extends JDialog {
 						formDatosUsuario.setNombre(usr.getNombre());
 						formDatosUsuario.setFNac(usr.getFechaNac());
 						formDatosUsuario.setEmail(usr.getEmail());
+						formDatosUsuario.setSysAdmin(usr.getSysAdmin());
+						formDatosUsuario.setLocationRelativeTo(null);
 						formDatosUsuario.setVisible(true);
 						if (!formDatosUsuario.getCancelado())
 						{

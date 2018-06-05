@@ -70,6 +70,9 @@ public class AdminListaRegalos {
 				if (!sigueEstando)
 				{
 					System.out.println("se quito: " + p.getUsuario().getIdUsuario());
+					if (!AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario().equals(lista.getAdmin().getIdUsuario()))
+						throw new ExceptionDeNegocio("Solo el administrador de la lista puede quitar participantes.");
+					
 					lista.quitarParticipante(p.getUsuario().getIdUsuario());
 				}
 			}
@@ -83,6 +86,9 @@ public class AdminListaRegalos {
 					if (usr != null)
 					{
 						System.out.println("se agrego: " + usr.getIdUsuario());
+						if (!AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario().equals(lista.getAdmin().getIdUsuario()))
+							throw new ExceptionDeNegocio("Solo el administrador de la lista puede agregar participantes.");
+						
 						lista.agregarParticipante(new Participante(usr));
 					}
 				}

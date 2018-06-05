@@ -31,7 +31,7 @@ public class AdmPersistenciaUsuarios {
 		try
 		{
 			cnx = PoolConexiones.getInstancia().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.USUARIOS (IdUsuario,Password,Nombre,Apellido,FechaNac,Email,Activo) VALUES (?,?,?,?,?,?,?)");
+			PreparedStatement cmdSql = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.USUARIOS (IdUsuario,Password,Nombre,Apellido,FechaNac,Email,Activo,sysAdmin) VALUES (?,?,?,?,?,?,?,?)");
 			cmdSql.setString(1, usr.getIdUsuario());
 			cmdSql.setString(2, usr.getPassword());
 			cmdSql.setString(3, usr.getNombre());
@@ -39,6 +39,7 @@ public class AdmPersistenciaUsuarios {
 			cmdSql.setTimestamp(5, new Timestamp(usr.getFechaNac().getTime()));
 			cmdSql.setString(6, usr.getEmail());
 			cmdSql.setBoolean(7, usr.getActivo());
+			cmdSql.setBoolean(8, usr.getSysAdmin());
 			cmdSql.execute();
 			PoolConexiones.getInstancia().realeaseConnection(cnx);
 		}
@@ -72,7 +73,8 @@ public class AdmPersistenciaUsuarios {
 				Date fNac = result.getDate(5);
 				String email = result.getString(6);
 				Boolean activo = result.getBoolean(7);
-				usr = new Usuario(idUsr,password,nombre,apellido,fNac,email,activo);
+				Boolean sysAdmin = result.getBoolean(8);
+				usr = new Usuario(idUsr,password,nombre,apellido,fNac,email,activo,sysAdmin);
 			}
 			PoolConexiones.getInstancia().realeaseConnection(cnx);
 			return usr;
@@ -102,7 +104,7 @@ public class AdmPersistenciaUsuarios {
 				String idUsr = result.getString(1);
 				String nombre = result.getString(2);
 				String apellido = result.getString(3);
-				Usuario usr = new Usuario(idUsr,null,nombre,apellido,null,null,true);
+				Usuario usr = new Usuario(idUsr,null,nombre,apellido,null,null,true,false);
 				lista.add(usr);
 			}
 			PoolConexiones.getInstancia().realeaseConnection(cnx);
@@ -125,14 +127,15 @@ public class AdmPersistenciaUsuarios {
 		try
 		{
 			cnx = PoolConexiones.getInstancia().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.USUARIOS SET Password=?,Nombre=?,Apellido=?,FechaNac=?,Email=?,Activo=? WHERE IdUsuario=?");
+			PreparedStatement cmdSql = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.USUARIOS SET Password=?,Nombre=?,Apellido=?,FechaNac=?,Email=?,Activo=?,SysAdmin=? WHERE IdUsuario=?");
 			cmdSql.setString(1, usr.getPassword());
 			cmdSql.setString(2, usr.getNombre());
 			cmdSql.setString(3, usr.getApellido());
 			cmdSql.setTimestamp(4, new Timestamp(usr.getFechaNac().getTime()));
 			cmdSql.setString(5, usr.getEmail());
 			cmdSql.setBoolean(6, usr.getActivo());
-			cmdSql.setString(7, usr.getIdUsuario());		
+			cmdSql.setBoolean(7, usr.getSysAdmin());
+			cmdSql.setString(8, usr.getIdUsuario());		
 			cmdSql.execute();
 			PoolConexiones.getInstancia().realeaseConnection(cnx);
 		}

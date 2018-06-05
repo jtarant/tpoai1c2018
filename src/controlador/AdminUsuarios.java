@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+
+import modelo.ExceptionDeNegocio;
 import modelo.Usuario;
 import persistencia.AdmPersistenciaUsuarios;
 
@@ -25,11 +27,11 @@ public class AdminUsuarios {
 		return instancia;
 	}
 	
-	public void crear(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
+	public void crear(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email, Boolean sysAdmin) throws Exception
 	{
 		try
 		{
-			Usuario nuevoUsr = new Usuario(idUsuario, password, nombre, apellido, fechaNac, email);
+			Usuario nuevoUsr = new Usuario(idUsuario, password, nombre, apellido, fechaNac, email, sysAdmin);
 			usuarios.put(idUsuario, nuevoUsr);
 		}
 		catch (Exception e)
@@ -38,16 +40,22 @@ public class AdminUsuarios {
 		}
 	}
 
-	public void modificar(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email) throws Exception
+	public void modificar(String idUsuario, String password, String nombre, String apellido, Date fechaNac, String email, Boolean sysAdmin) throws Exception
 	{
 		try
 		{
+			if ((!getUsuarioLogueado().getIdUsuario().equals(idUsuario)) && 
+			    (!getUsuarioLogueado().getSysAdmin()))
+			{
+				throw new ExceptionDeNegocio("Necesita permisos de sysadmin para modificar usuarios.");
+			}  
 			Usuario usr = buscar(idUsuario);
 			usr.setPassword(password);
 			usr.setNombre(nombre);
 			usr.setApellido(apellido);
 			usr.setFechaNac(fechaNac);
 			usr.setEmail(email);
+			usr.setSysAdmin(sysAdmin);
 			usr.actualizar();
 			usuarios.replace(usr.getIdUsuario(), usr);
 		}
@@ -61,6 +69,14 @@ public class AdminUsuarios {
 	{
 		try 
 		{
+			if (getUsuarioLogueado().getIdUsuario().equals(idUsuario))
+			{
+				throw new ExceptionDeNegocio("No se puede eliminar el usuario que se encuentra logueado actualmente.");
+			}
+			else
+			{
+				if (!getUsuarioLogueado().getSysAdmin()) throw new ExceptionDeNegocio("Necesita permisos de sysadmin para eliminar usuarios.");
+			}			
 			Usuario usr = buscar(idUsuario);
 			usr.eliminar();
 			usuarios.remove(idUsuario);

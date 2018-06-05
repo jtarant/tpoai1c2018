@@ -82,6 +82,7 @@ public class VentanaPrincipal extends JFrame {
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				ABMUsuarios abmUsuarios = new ABMUsuarios();
+				abmUsuarios.setLocationRelativeTo(null);
 				abmUsuarios.setVisible(true);
 			}
 		});
@@ -91,7 +92,7 @@ public class VentanaPrincipal extends JFrame {
 		mntmLogincambiarDeUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				Login();
+				Login(false);
 			}
 		});
 		mnUsuarios.add(mntmLogincambiarDeUsuario);
@@ -246,31 +247,17 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});		
 		
-		try
+		this.Login(true);
+		if (AdminUsuarios.getInstancia().getUsuarioLogueado() == null)
 		{
-			if (AdminUsuarios.getInstancia().getCantidadUsuarios() == 0)
-			{
-				this.DesactivarGestionListas();
-				JOptionPane.showMessageDialog(null, "No hay usuarios en el sistema. Cree uno y seleccione la opcion Login del menu Administacion.", "IMPORTANTE", JOptionPane.WARNING_MESSAGE);
-			}
-			else
-			{
-				this.Login();
-				if (AdminUsuarios.getInstancia().getUsuarioLogueado() == null)
-				{
-					System.exit(0);
-				}
-			}
+			System.exit(0);
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}		
 	}
 	
-	private void Login()
+	private void Login(Boolean habilitarRegistracion)
 	{
 		Login formLogin = new Login();
+		formLogin.habilitarRegistracion(habilitarRegistracion);
 		formLogin.setLocationRelativeTo(null);
 		formLogin.setVisible(true);
 		formLogin.dispose();
@@ -286,14 +273,9 @@ public class VentanaPrincipal extends JFrame {
 		else
 		{
 			lblNombreUsuario.setText("");
-			this.DesactivarGestionListas();
+			btnNuevaLista.setEnabled(false);
+			table.setEnabled(false);		
 		}
-	}
-	
-	private void DesactivarGestionListas()
-	{
-		btnNuevaLista.setEnabled(false);
-		table.setEnabled(false);		
 	}
 	
 	private void LlenarGrilla()

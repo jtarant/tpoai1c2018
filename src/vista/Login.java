@@ -17,13 +17,20 @@ import javax.swing.JPasswordField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import javax.swing.SwingConstants;
 
 public class Login extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtIdUsuario;
 	private JPasswordField pwdPassword;
+	private JButton btnRegistrarme;
 
+	public void habilitarRegistracion(Boolean r)
+	{
+		btnRegistrarme.setVisible(r);
+	}
+	
 	/**
 	 * Create the dialog.
 	 */
@@ -87,6 +94,27 @@ public class Login extends JDialog {
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
+				
+				btnRegistrarme = new JButton("Registrarme");
+				buttonPane.add(btnRegistrarme);
+				btnRegistrarme.setVisible(false);
+				btnRegistrarme.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) 
+					{
+						try 
+						{
+							DatosUsuario formDatosUsuario = new DatosUsuario();
+							formDatosUsuario.setLocationRelativeTo(null);
+							formDatosUsuario.setVisible(true);
+							formDatosUsuario.dispose();
+						} 
+						catch (Exception e) 
+						{
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Error al guardar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}				
+					}
+				});
 			}
 			{
 				JButton cancelButton = new JButton("Cancelar");
