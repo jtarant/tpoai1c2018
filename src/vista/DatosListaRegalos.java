@@ -47,6 +47,7 @@ public class DatosListaRegalos extends JDialog {
 	private List<String> participantes;
 	private Boolean modoEdicion;
 	private Boolean cancelado;
+	private JLabel lblAdmin;
 
 	/**
 	 * Create the dialog.
@@ -56,23 +57,23 @@ public class DatosListaRegalos extends JDialog {
 		setResizable(false);
 		setTitle("Crear lista de regalos");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 565, 471);
+		setBounds(100, 100, 565, 479);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Nombre Agasajado");
-		lblNewLabel.setBounds(10, 11, 124, 14);
+		lblNewLabel.setBounds(10, 39, 124, 14);
 		contentPanel.add(lblNewLabel);
 		
 		txtNombreAgasajado = new JTextField();
-		txtNombreAgasajado.setBounds(187, 8, 229, 20);
+		txtNombreAgasajado.setBounds(187, 36, 229, 20);
 		contentPanel.add(txtNombreAgasajado);
 		txtNombreAgasajado.setColumns(10);
 		
 		JLabel lblFechaDelAgasajo = new JLabel("Fecha del Agasajo");
-		lblFechaDelAgasajo.setBounds(10, 42, 138, 14);
+		lblFechaDelAgasajo.setBounds(10, 70, 138, 14);
 		contentPanel.add(lblFechaDelAgasajo);
 		
 		try {
@@ -80,19 +81,19 @@ public class DatosListaRegalos extends JDialog {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		mskFechaAgasajo.setBounds(187, 39, 81, 20);
+		mskFechaAgasajo.setBounds(187, 67, 81, 20);
 		contentPanel.add(mskFechaAgasajo);
 		
 		JLabel lblMontoPorParticipante = new JLabel("Monto por participante ($)");
-		lblMontoPorParticipante.setBounds(10, 73, 167, 14);
+		lblMontoPorParticipante.setBounds(10, 101, 167, 14);
 		contentPanel.add(lblMontoPorParticipante);
 		
 		mskMonto = new JFormattedTextField(new NumberFormatter());
-		mskMonto.setBounds(187, 70, 81, 20);
+		mskMonto.setBounds(187, 98, 81, 20);
 		contentPanel.add(mskMonto);
 		
 		JLabel lblFechaInicio = new JLabel("Fecha inicio");
-		lblFechaInicio.setBounds(10, 102, 138, 14);
+		lblFechaInicio.setBounds(10, 130, 138, 14);
 		contentPanel.add(lblFechaInicio);
 		
 		try {
@@ -100,11 +101,11 @@ public class DatosListaRegalos extends JDialog {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		mskFechaInicio.setBounds(187, 99, 81, 20);
+		mskFechaInicio.setBounds(187, 127, 81, 20);
 		contentPanel.add(mskFechaInicio);
 		
 		JLabel lblFechaFin = new JLabel("Fecha fin");
-		lblFechaFin.setBounds(10, 137, 138, 14);
+		lblFechaFin.setBounds(10, 165, 138, 14);
 		contentPanel.add(lblFechaFin);
 		{
 			JButton btnAceptar = new JButton("Aceptar");
@@ -151,7 +152,7 @@ public class DatosListaRegalos extends JDialog {
 					}					
 				}
 			});
-			btnAceptar.setBounds(349, 398, 101, 23);
+			btnAceptar.setBounds(350, 420, 101, 23);
 			contentPanel.add(btnAceptar);
 			btnAceptar.setActionCommand("OK");
 			getRootPane().setDefaultButton(btnAceptar);
@@ -165,21 +166,21 @@ public class DatosListaRegalos extends JDialog {
 					setVisible(false);					
 				}
 			});
-			btnCancelar.setBounds(460, 398, 89, 23);
+			btnCancelar.setBounds(460, 420, 89, 23);
 			contentPanel.add(btnCancelar);
 			btnCancelar.setActionCommand("Cancel");
 		}
 		
 		JLabel lblParticipantes = new JLabel("Participantes");
 		lblParticipantes.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblParticipantes.setBounds(10, 176, 166, 14);
+		lblParticipantes.setBounds(10, 208, 166, 14);
 		contentPanel.add(lblParticipantes);
 		
 		tblParticipantes = new JTable();
 		tblParticipantes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblParticipantes.setDefaultEditor(Object.class, null);
 		tblParticipantes.setAutoscrolls(true);
-		tblParticipantes.setBounds(10, 201, 236, 176);
+		tblParticipantes.setBounds(10, 233, 236, 176);
 		contentPanel.add(tblParticipantes);
 		
 		tblParticipantes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -196,7 +197,7 @@ public class DatosListaRegalos extends JDialog {
 		});				
 		
 		JLabel lblNoParticipan = new JLabel("No participan");
-		lblNoParticipan.setBounds(315, 176, 145, 14);
+		lblNoParticipan.setBounds(315, 208, 145, 14);
 		contentPanel.add(lblNoParticipan);
 		
 		btnAgregar = new JButton("<=");
@@ -212,7 +213,7 @@ public class DatosListaRegalos extends JDialog {
 				LlenarGrillas();
 			}
 		});
-		btnAgregar.setBounds(256, 261, 49, 23);
+		btnAgregar.setBounds(256, 292, 49, 23);
 		contentPanel.add(btnAgregar);
 		
 		btnQuitar = new JButton("=>");
@@ -228,14 +229,14 @@ public class DatosListaRegalos extends JDialog {
 				LlenarGrillas();				
 			}
 		});
-		btnQuitar.setBounds(256, 298, 49, 23);
+		btnQuitar.setBounds(256, 326, 49, 23);
 		contentPanel.add(btnQuitar);
 		
 		tblNoParticipantes = new JTable();
 		tblNoParticipantes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblNoParticipantes.setDefaultEditor(Object.class, null);
 		tblNoParticipantes.setAutoscrolls(true);
-		tblNoParticipantes.setBounds(315, 201, 234, 176);
+		tblNoParticipantes.setBounds(315, 233, 234, 176);
 		contentPanel.add(tblNoParticipantes);
 		
 		tblNoParticipantes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -256,12 +257,20 @@ public class DatosListaRegalos extends JDialog {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		mskFechaFin.setBounds(187, 134, 81, 20);
+		mskFechaFin.setBounds(187, 162, 81, 20);
 		contentPanel.add(mskFechaFin);
 		
 		JLabel lblMontoRecaudado = new JLabel("Monto recaudado ($): 0.0");
-		lblMontoRecaudado.setBounds(315, 73, 234, 14);
+		lblMontoRecaudado.setBounds(315, 101, 234, 14);
 		contentPanel.add(lblMontoRecaudado);
+		
+		JLabel lblAdminDeLa = new JLabel("Admin. de la lista");
+		lblAdminDeLa.setBounds(10, 11, 167, 14);
+		contentPanel.add(lblAdminDeLa);
+		
+		lblAdmin = new JLabel("");
+		lblAdmin.setBounds(187, 11, 229, 14);
+		contentPanel.add(lblAdmin);
 		cancelado = false;
 		modoEdicion = false;
 		LimpiarCampos();
@@ -349,6 +358,10 @@ public class DatosListaRegalos extends JDialog {
 		this.codigo = codigo;
 		this.modoEdicion = true;
 		this.setTitle("Modificar Lista de Regalos");
+	}
+	public void setNombreAdmin(String admin)
+	{
+		lblAdmin.setText(admin);
 	}
 	public void setNombreAgasajado(String nombre)
 	{

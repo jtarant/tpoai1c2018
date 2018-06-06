@@ -118,6 +118,7 @@ public class VentanaPrincipal extends JFrame {
 			{
 				DatosListaRegalos formListaRegalos = new DatosListaRegalos();
 				formListaRegalos.setLocationRelativeTo(null);
+				formListaRegalos.setNombreAdmin(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario());
 				formListaRegalos.setVisible(true);
 				if (!formListaRegalos.getCancelado())
 				{
@@ -174,6 +175,7 @@ public class VentanaPrincipal extends JFrame {
 							
 					DatosListaRegalos formListaRegalos = new DatosListaRegalos();
 					formListaRegalos.setCodigo(codigo);
+					formListaRegalos.setNombreAdmin(lista.getidUsuarioAdmin());
 					formListaRegalos.setNombreAgasajado(lista.getNombreAgasajado());
 					formListaRegalos.setFechaAgasajo(lista.getFechaAgasajo());
 					formListaRegalos.setMontoPorParticipante(lista.getMontoPorParticipante());
