@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -19,6 +20,14 @@ import javax.swing.JDialog;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.GridLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.FlowLayout;
 
 public class ABMUsuarios extends JDialog {
 
@@ -33,43 +42,27 @@ public class ABMUsuarios extends JDialog {
 		setResizable(false);
 		setTitle("Administracion de Usuarios");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 477, 300);
+		setBounds(100, 100, 479, 335);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
 
 	
 		table = new JTable();
+		table.setFillsViewportHeight(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setBounds(10, 15, 346, 239);
 		table.setDefaultEditor(Object.class, null);
+		contentPane.setLayout(new BorderLayout(0, 0));
 		table.setAutoscrolls(true);
-		contentPane.add(table);
-
-		JButton btnAgregar = new JButton("Agregar");
-		btnAgregar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try 
-				{
-					DatosUsuario formDatosUsuario = new DatosUsuario();
-					formDatosUsuario.setLocationRelativeTo(null);
-					formDatosUsuario.setVisible(true);
-					if (!formDatosUsuario.getCancelado())
-					{
-						LlenarGrilla();	
-					}
-					formDatosUsuario.dispose();
-				} 
-				catch (Exception e) 
-				{
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Error al guardar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		btnAgregar.setBounds(366, 11, 89, 23);
-		contentPane.add(btnAgregar);
+		JScrollPane scrollpane = new JScrollPane(table);
+		scrollpane.add(table.getTableHeader());
+		table.getTableHeader().setReorderingAllowed(false);
+		contentPane.add(scrollpane, BorderLayout.CENTER);
+		
+		JPanel panelInf = new JPanel();
+		panelInf.setBounds(100, 200, 100, 200);
+		panelInf.setSize(900,900);
+		contentPane.add(panelInf, BorderLayout.PAGE_END);
 		
 		JButton btnModificar = new JButton("Modificar");
 		btnModificar.addActionListener(new ActionListener() {
@@ -103,9 +96,29 @@ public class ABMUsuarios extends JDialog {
 				}				
 			}
 		});
+		
+				JButton btnAgregar = new JButton("Agregar");
+				btnAgregar.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						try 
+						{
+							DatosUsuario formDatosUsuario = new DatosUsuario();
+							formDatosUsuario.setLocationRelativeTo(null);
+							formDatosUsuario.setVisible(true);
+							if (!formDatosUsuario.getCancelado())
+							{
+								LlenarGrilla();	
+							}
+							formDatosUsuario.dispose();
+						} 
+						catch (Exception e) 
+						{
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Error al guardar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+				});
 		btnModificar.setEnabled(false);
-		btnModificar.setBounds(366, 45, 89, 23);
-		contentPane.add(btnModificar);
 		
 		JButton btnEliminar = new JButton("Eliminar");
 		btnEliminar.addActionListener(new ActionListener() {
@@ -127,8 +140,10 @@ public class ABMUsuarios extends JDialog {
 			}
 		});
 		btnEliminar.setEnabled(false);
-		btnEliminar.setBounds(366, 79, 89, 23);
-		contentPane.add(btnEliminar);
+		panelInf.setLayout(new FlowLayout(FlowLayout.TRAILING, 5, 5));
+		panelInf.add(btnAgregar);
+		panelInf.add(btnModificar);
+		panelInf.add(btnEliminar);
 				
 		this.LlenarGrilla();
 		

@@ -36,6 +36,9 @@ import javax.swing.ScrollPaneLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.FlowLayout;
+import javax.swing.KeyStroke;
+import java.awt.event.KeyEvent;
+import java.awt.event.InputEvent;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -78,6 +81,7 @@ public class VentanaPrincipal extends JFrame {
 		menuBar.add(mnUsuarios);
 		
 		JMenuItem mntmGestionDeUsuarios = new JMenuItem("Gestion de Usuarios");
+		mntmGestionDeUsuarios.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.ALT_MASK));
 		mntmGestionDeUsuarios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -89,6 +93,7 @@ public class VentanaPrincipal extends JFrame {
 		mnUsuarios.add(mntmGestionDeUsuarios);
 		
 		JMenuItem mntmLogincambiarDeUsuario = new JMenuItem("Login/Cambiar de usuario...");
+		mntmLogincambiarDeUsuario.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.ALT_MASK));
 		mntmLogincambiarDeUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -96,6 +101,18 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		mnUsuarios.add(mntmLogincambiarDeUsuario);
+		
+		JMenu mnAyuda = new JMenu("Ayuda");
+		menuBar.add(mnAyuda);
+		
+		JMenuItem mntmAcercaDe = new JMenuItem("Acerca de...");
+		mntmAcercaDe.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				JOptionPane.showMessageDialog(null, "Grupo:\nTARANTINO, JOSE LUIS (LU 1072978)\nCALISI, LUCAS PABLO (LU 1069703)\n");
+			}
+		});
+		mnAyuda.add(mntmAcercaDe);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
