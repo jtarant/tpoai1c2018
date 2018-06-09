@@ -53,10 +53,9 @@ public class AdmPersistenciaListasRegalos {
 			}
 			
 			/* PARTICIPANTES */
-			AdmPersistenciaParticipantes admPart = AdmPersistenciaParticipantes.getInstancia();
 			for (Participante participante: lista.getParticipantes())
 			{
-				admPart.insertar(lista.getCodigo(), participante);
+				insertarParticipante(lista.getCodigo(), participante, cnx);
 			}
 			cnx.commit();
 		}
@@ -71,7 +70,7 @@ public class AdmPersistenciaListasRegalos {
 			if (cnx != null) PoolConexiones.getInstancia().finTransaccion(); 
 		}
 	}
-
+		
 	public List<ListaResumenView> listarMisListas(Usuario usr) throws Exception 
 	{
 		Connection cnx = null;
@@ -130,10 +129,17 @@ public class AdmPersistenciaListasRegalos {
 				lista = new ListaRegalos(resultLista.getInt(1), admin, resultLista.getDate(3), resultLista.getString(4), resultLista.getFloat(5), resultLista.getDate(6), resultLista.getDate(7), EstadoListaRegalos.fromInt(resultLista.getInt(8)));
 				
 				/* PARTICIPANTES */
-				List<Participante> ps = AdmPersistenciaParticipantes.getInstancia().obtenerDeLista(codigo);
-				for (Participante p: ps)
+				PreparedStatement cmdSqlParticipante = cnx.prepareStatement("SELECT IdUsuario,FechaPago FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
+				cmdSqlParticipante.setInt(1, codigo);
+				ResultSet resultParticipantes = cmdSqlParticipante.executeQuery();
+
+				while (resultParticipantes.next())
 				{
-					lista.agregarParticipante(p);
+					Usuario p = AdmPersistenciaUsuarios.getInstancia().buscar(resultParticipantes.getString(1));
+					if (p != null)
+					{
+						lista.agregarParticipante(new Participante(p, resultParticipantes.getDate(2)));
+					}
 				}
 				lista.resetearCambiosParticipantes();
 			}
@@ -158,7 +164,9 @@ public class AdmPersistenciaListasRegalos {
 		{
 			cnx = PoolConexiones.getInstancia().iniciarTransaccion();
 			/* ELIMINO PARTICIPANTES */
-			AdmPersistenciaParticipantes.getInstancia().eliminarTodos(lista.getCodigo());
+			PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
+			cmdSqlParticipante.setInt(1, lista.getCodigo());
+			cmdSqlParticipante.execute();
 			
 			/* ELIMINO LA LISTA */
 			PreparedStatement cmdSqlLista = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=?");
@@ -187,11 +195,11 @@ public class AdmPersistenciaListasRegalos {
 			/* ACTUALIZACION DE PARTICIPANTES */
 			for (Participante nuevo : lista.getParticipantesNuevos())
 			{
-				AdmPersistenciaParticipantes.getInstancia().insertar(lista.getCodigo(), nuevo);
+				insertarParticipante(lista.getCodigo(), nuevo, cnx);
 			}
 			for (Participante baja : lista.getParticipantesEliminados())
 			{
-				AdmPersistenciaParticipantes.getInstancia().eliminar(baja);
+				eliminarParticipante(baja, cnx);
 			}
 			/* ACTUALIZACION DE LA LISTA */
 			PreparedStatement cmdSqlLista = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos SET FechaAgasajo=?, NombreAgasajado=?, MontoPorParticipante=?, FechaInicio=?, FechaFin=?, Estado=? WHERE CodigoLista=?");
@@ -216,4 +224,28 @@ public class AdmPersistenciaListasRegalos {
 			if (cnx != null) PoolConexiones.getInstancia().finTransaccion(); 
 		}						
 	}
+	
+	private void insertarParticipante(int codigoLista, Participante p, Connection cnx) throws SQLException
+	{
+		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.Participantes (CodigoLista,IdUsuario,FechaPago) VALUES (?,?,?);");
+		cmdSqlParticipante.setInt(1, codigoLista);
+		cmdSqlParticipante.setString(2, p.getUsuario().getIdUsuario());
+		if (p.getPagoRealizado())
+		{
+			cmdSqlParticipante.setTimestamp(3, new Timestamp(p.getFechaPago().getTime()));
+		}
+		else
+		{
+			cmdSqlParticipante.setTimestamp(3, null);
+		}
+		cmdSqlParticipante.execute();		
+	}
+	
+	private void eliminarParticipante(Participante p, Connection cnx) throws SQLException
+	{
+		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=? AND IdUsuario=?");		
+		cmdSqlParticipante.setInt(1, p.getLista().getCodigo());
+		cmdSqlParticipante.setString(2, p.getUsuario().getIdUsuario());
+		cmdSqlParticipante.execute();		
+	}	
 }
