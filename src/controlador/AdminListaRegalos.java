@@ -50,6 +50,12 @@ public class AdminListaRegalos {
 		try
 		{
 			ListaRegalos lista = buscar(codigo);
+			
+			if  (!((lista.getAdmin().getIdUsuario().equals(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario())) ||
+				    (AdminUsuarios.getInstancia().getUsuarioLogueado().getSysAdmin())))
+				{
+					throw new ExceptionDeNegocio("Solo el usuario administrador de esta lista o el sysadmin pueden modificarla.");
+				}
 			lista.setFechaAgasajo(fechaAgasajo);
 			lista.setNombreAgasajado(nombreAgasajado);
 			lista.setMontoPorParticipante(monto);
@@ -70,9 +76,6 @@ public class AdminListaRegalos {
 				if (!sigueEstando)
 				{
 					System.out.println("se quito: " + p.getUsuario().getIdUsuario());
-					if (!AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario().equals(lista.getAdmin().getIdUsuario()))
-						throw new ExceptionDeNegocio("Solo el administrador de la lista puede quitar participantes.");
-					
 					lista.quitarParticipante(p.getUsuario().getIdUsuario());
 				}
 			}
@@ -86,9 +89,6 @@ public class AdminListaRegalos {
 					if (usr != null)
 					{
 						System.out.println("se agrego: " + usr.getIdUsuario());
-						if (!AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario().equals(lista.getAdmin().getIdUsuario()))
-							throw new ExceptionDeNegocio("Solo el administrador de la lista puede agregar participantes.");
-						
 						lista.agregarParticipante(new Participante(usr));
 					}
 				}
@@ -108,9 +108,10 @@ public class AdminListaRegalos {
 		try 
 		{
 			ListaRegalos lista = this.buscar(codigo);
-			if (!lista.getAdmin().getIdUsuario().equals(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario()))
+			if  (!((lista.getAdmin().getIdUsuario().equals(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario())) ||
+			    (AdminUsuarios.getInstancia().getUsuarioLogueado().getSysAdmin())))
 			{
-				throw new ExceptionDeNegocio("Solo el usuario administrador de esta lista puede eliminarla.");
+				throw new ExceptionDeNegocio("Solo el usuario administrador de esta lista o el sysadmin pueden eliminarla.");
 			}
 			lista.eliminar();
 			this.listas.remove(codigo);

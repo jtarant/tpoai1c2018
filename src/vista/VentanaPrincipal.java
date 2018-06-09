@@ -85,9 +85,40 @@ public class VentanaPrincipal extends JFrame {
 		mntmGestionDeUsuarios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				ABMUsuarios abmUsuarios = new ABMUsuarios();
-				abmUsuarios.setLocationRelativeTo(null);
-				abmUsuarios.setVisible(true);
+				if (AdminUsuarios.getInstancia().getUsuarioLogueado().getSysAdmin())
+				{
+					// Solo el sysadmin puede acceder al ABM de usuarios
+					ABMUsuarios abmUsuarios = new ABMUsuarios();
+					abmUsuarios.setLocationRelativeTo(null);
+					abmUsuarios.setVisible(true);
+				}
+				else
+				{
+					// Los usuario no-syadmin solo pueden modificar su propio usuario
+					try 
+					{
+						UsuarioView usr = AdminUsuarios.getInstancia().obtener(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario());
+						if (usr != null)
+						{
+							DatosUsuario formDatosUsuario = new DatosUsuario();
+							formDatosUsuario.setIdUsuario(usr.getIdUsuario());
+							formDatosUsuario.setPassword(usr.getPassword());
+							formDatosUsuario.setApellido(usr.getApellido());
+							formDatosUsuario.setNombre(usr.getNombre());
+							formDatosUsuario.setFNac(usr.getFechaNac());
+							formDatosUsuario.setEmail(usr.getEmail());
+							formDatosUsuario.setSysAdmin(usr.getSysAdmin());
+							formDatosUsuario.setLocationRelativeTo(null);
+							formDatosUsuario.setVisible(true);
+							formDatosUsuario.dispose();
+						}
+					} 
+					catch (Exception e) 
+					{
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Error al actualizar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}									
+				}
 			}
 		});
 		mnUsuarios.add(mntmGestionDeUsuarios);
@@ -187,30 +218,38 @@ public class VentanaPrincipal extends JFrame {
 			{
 				try
 				{
-					int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
-					ListaRegalosView lista = AdminListaRegalos.getInstancia().obtener(codigo);
-							
-					DatosListaRegalos formListaRegalos = new DatosListaRegalos();
-					formListaRegalos.setCodigo(codigo);
-					formListaRegalos.setNombreAdmin(lista.getidUsuarioAdmin());
-					formListaRegalos.setNombreAgasajado(lista.getNombreAgasajado());
-					formListaRegalos.setFechaAgasajo(lista.getFechaAgasajo());
-					formListaRegalos.setMontoPorParticipante(lista.getMontoPorParticipante());
-					formListaRegalos.setFechaInicio(lista.getFechaInicio());
-					formListaRegalos.setFechaFin(lista.getFechaFin());
-					List<String> participantes = new ArrayList<String>();
-					for (ParticipanteView p : lista.getParticipantes())
-					{
-						participantes.add(p.getIdUsuario());
-					}				
-					formListaRegalos.setIdUsuariosParticipantes(participantes);
-					formListaRegalos.setLocationRelativeTo(null);
-					formListaRegalos.setVisible(true);
-					if (!formListaRegalos.getCancelado())
-					{
-						LlenarGrilla();	
+					if ((AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario().equals(table.getValueAt(table.getSelectedRow(), 1).toString())) ||
+					     AdminUsuarios.getInstancia().getUsuarioLogueado().getSysAdmin())
+					{				
+						int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+						ListaRegalosView lista = AdminListaRegalos.getInstancia().obtener(codigo);
+								
+						DatosListaRegalos formListaRegalos = new DatosListaRegalos();
+						formListaRegalos.setCodigo(codigo);
+						formListaRegalos.setNombreAdmin(lista.getidUsuarioAdmin());
+						formListaRegalos.setNombreAgasajado(lista.getNombreAgasajado());
+						formListaRegalos.setFechaAgasajo(lista.getFechaAgasajo());
+						formListaRegalos.setMontoPorParticipante(lista.getMontoPorParticipante());
+						formListaRegalos.setFechaInicio(lista.getFechaInicio());
+						formListaRegalos.setFechaFin(lista.getFechaFin());
+						List<String> participantes = new ArrayList<String>();
+						for (ParticipanteView p : lista.getParticipantes())
+						{
+							participantes.add(p.getIdUsuario());
+						}				
+						formListaRegalos.setIdUsuariosParticipantes(participantes);
+						formListaRegalos.setLocationRelativeTo(null);
+						formListaRegalos.setVisible(true);
+						if (!formListaRegalos.getCancelado())
+						{
+							LlenarGrilla();	
+						}
+						formListaRegalos.dispose();
 					}
-					formListaRegalos.dispose();
+					else
+					{
+						JOptionPane.showMessageDialog(null, "Solo el administrador de la lista o el sysadmin pueden modificarla.", "Error", JOptionPane.ERROR_MESSAGE);							
+					}					
 				}
 				catch (Exception e)
 				{
@@ -230,9 +269,17 @@ public class VentanaPrincipal extends JFrame {
 					int opcion = JOptionPane.showConfirmDialog(null, "Seguro que queres eliminar la lista de regalos?", "Eliminar lista de regalos", JOptionPane.YES_NO_OPTION);
 					if (opcion == JOptionPane.YES_OPTION)
 					{
-						int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
-						AdminListaRegalos.getInstancia().eliminar(codigo);
-						LlenarGrilla();
+						if ((AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario().equals(table.getValueAt(table.getSelectedRow(), 1).toString())) ||
+						     AdminUsuarios.getInstancia().getUsuarioLogueado().getSysAdmin())
+						{
+							int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+							AdminListaRegalos.getInstancia().eliminar(codigo);
+							LlenarGrilla();
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Solo el administrador de la lista o el sysadmin pueden eliminarla.", "Error", JOptionPane.ERROR_MESSAGE);							
+						}
 					}
 				}
 				catch (Exception e)

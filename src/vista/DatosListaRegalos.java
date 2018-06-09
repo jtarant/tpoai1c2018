@@ -295,9 +295,7 @@ public class DatosListaRegalos extends JDialog {
 		mskFechaFin.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 		try 
 		{
-			String usrLogueado = AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario();
 			usuariosDisponibles = AdminUsuarios.getInstancia().listarIdNombre();
-			usuariosDisponibles.removeIf(u -> u.getIdUsuario().equals(usrLogueado));	// El admin no puede ser participante
 		} 
 		catch (Exception e) 
 		{
@@ -331,8 +329,19 @@ public class DatosListaRegalos extends JDialog {
 		tblNoParticipantes.removeAll();
 		model2 = new DefaultTableModel();
 		model2.addColumn("Nombre");
-		model2.addColumn("Usuario");		
-
+		model2.addColumn("Usuario");
+		
+		String usrAdmin;
+		if (!modoEdicion)
+		{
+			usrAdmin = AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario();
+		}
+		else
+		{
+			usrAdmin = this.lblAdmin.getText();
+		}
+		usuariosDisponibles.removeIf(u -> u.getIdUsuario().equals(usrAdmin)); // El admin no puede ser participante
+		
 		for(UsuarioIdNombreView u : usuariosDisponibles) 
 		{
 			fila[0] = u.getApellido() + ", " + u.getNombre();
