@@ -175,7 +175,7 @@ public class ListaRegalos
 			pv = new ParticipanteView(p.getUsuario().getIdUsuario(), p.getFechaPago());
 			partv.add(pv);
 		}
-		return new ListaRegalosView(getCodigo(), getAdmin().getIdUsuario(), getFechaAgasajo(), getNombreAgasajado(), getMontoPorParticipante(), getFechaInicio(), getFechaFin(), partv);
+		return new ListaRegalosView(getCodigo(), getAdmin().getIdUsuario(), getFechaAgasajo(), getNombreAgasajado(), getMontoPorParticipante(), getFechaInicio(), getFechaFin(), getMontoRecaudado(), partv);
 	}
 
 	public void eliminar() throws Exception 
@@ -202,6 +202,49 @@ public class ListaRegalos
 	public List<Participante> getParticipantesEliminados()
 	{
 		return eliminados;
+	}
+	
+	public void registrarPago(String idUsuario, Date fechaPago) throws ExceptionDeNegocio
+	{
+		Participante p = getParticipante(idUsuario);
+		if (p == null)
+		{
+			throw new ExceptionDeNegocio("El usuario " + idUsuario + " no participa de esta lista.");
+		}
+		else
+		{
+			p.setFechaPago(fechaPago);
+		}
+		if (!nuevos.contains(p))
+		{
+			modificados.add(p);
+		}
+		Boolean pagaronTodos = true;
+		for	(Participante part: getParticipantes())
+		{
+			if (!part.getPagoRealizado())
+			{
+				pagaronTodos = false;
+				break;
+			}
+		}
+		if (pagaronTodos)
+		{
+			setEstado(EstadoListaRegalos.CERRADA);
+		}		
+	}
+	
+	public float getMontoRecaudado()
+	{
+		float monto = 0;
+		for (Participante p: getParticipantes())
+		{
+			if (p.getPagoRealizado())
+			{
+				monto = monto + getMontoPorParticipante();
+			}
+		}
+		return monto;
 	}
 	
 	public void resetearCambiosParticipantes()

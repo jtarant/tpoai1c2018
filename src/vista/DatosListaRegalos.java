@@ -48,6 +48,7 @@ public class DatosListaRegalos extends JDialog {
 	private Boolean modoEdicion;
 	private Boolean cancelado;
 	private JLabel lblAdmin;
+	private JLabel lblMontoRecaudado;
 
 	/**
 	 * Create the dialog.
@@ -260,7 +261,7 @@ public class DatosListaRegalos extends JDialog {
 		mskFechaFin.setBounds(187, 162, 81, 20);
 		contentPanel.add(mskFechaFin);
 		
-		JLabel lblMontoRecaudado = new JLabel("Monto recaudado ($): 0.0");
+		lblMontoRecaudado = new JLabel("");
 		lblMontoRecaudado.setBounds(315, 101, 234, 14);
 		contentPanel.add(lblMontoRecaudado);
 		
@@ -303,6 +304,7 @@ public class DatosListaRegalos extends JDialog {
 			JOptionPane.showMessageDialog(null, "Error al obtener la lista de usuarios:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		participantes = new ArrayList<String>();
+		this.setMontoRecaudado(0);
 	}
 	
 	private String getValidacionesFallidas()
@@ -391,6 +393,10 @@ public class DatosListaRegalos extends JDialog {
 	public void setFechaFin(Date fecha)
 	{
 		mskFechaFin.setText(new SimpleDateFormat("dd/MM/yyyy").format(fecha));
+	}
+	public void setMontoRecaudado(float monto)
+	{
+		lblMontoRecaudado.setText("Monto recaudado ($): " + String.format("%.2f", monto));
 	}
 	public void setIdUsuariosParticipantes(List<String> participantes)
 	{

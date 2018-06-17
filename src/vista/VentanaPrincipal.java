@@ -49,7 +49,8 @@ public class VentanaPrincipal extends JFrame {
 	private JButton btnModificar;
 	private JButton btnSalir;
 	private JButton btnEliminar;
-
+	private JButton btnPagos;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -208,6 +209,30 @@ public class VentanaPrincipal extends JFrame {
 				}				
 			}
 		});
+		
+		btnPagos = new JButton("Pagos");
+		btnPagos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				try
+				{
+					int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+					ListaRegalosView lista = AdminListaRegalos.getInstancia().obtener(codigo);
+					
+					DatosPagos formPagos = new DatosPagos(lista);
+					formPagos.setLocationRelativeTo(null);
+					formPagos.setVisible(true);
+					formPagos.dispose();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error al cargar los datos:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}				
+			}
+		});
+		btnPagos.setEnabled(false);
+		panelInf.add(btnPagos);
 		btnSalir.setEnabled(false);
 		panelInf.add(btnSalir);
 		
@@ -232,6 +257,7 @@ public class VentanaPrincipal extends JFrame {
 						formListaRegalos.setMontoPorParticipante(lista.getMontoPorParticipante());
 						formListaRegalos.setFechaInicio(lista.getFechaInicio());
 						formListaRegalos.setFechaFin(lista.getFechaFin());
+						formListaRegalos.setMontoRecaudado(lista.getMontoRecaudado());
 						List<String> participantes = new ArrayList<String>();
 						for (ParticipanteView p : lista.getParticipantes())
 						{
@@ -303,12 +329,14 @@ public class VentanaPrincipal extends JFrame {
 					btnModificar.setEnabled(true);
 					btnEliminar.setEnabled(true);
 					btnSalir.setEnabled(true);
+					btnPagos.setEnabled(true);
 				}
 				else
 				{
 					btnModificar.setEnabled(false);
 					btnEliminar.setEnabled(false);
 					btnSalir.setEnabled(false);
+					btnPagos.setEnabled(false);
 				}
 			}
 		});		

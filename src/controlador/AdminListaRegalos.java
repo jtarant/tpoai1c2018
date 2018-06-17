@@ -161,4 +161,15 @@ public class AdminListaRegalos {
 			lista.actualizar();
 		}
 	}
+	
+	public void registrarPago(int codigoLista, String idUsuario, Date fecha) throws Exception
+	{
+		ListaRegalos lista = this.buscar(codigoLista);
+		if (lista != null)
+		{
+			lista.registrarPago(idUsuario, fecha);
+			lista.actualizar();
+		}
+		else throw new ExceptionDeNegocio("La lista " + Integer.toString(codigoLista) + " no existe.");
+	}
 }

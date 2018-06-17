@@ -197,6 +197,10 @@ public class AdmPersistenciaListasRegalos {
 			{
 				insertarParticipante(lista.getCodigo(), nuevo, cnx);
 			}
+			for (Participante modif : lista.getParticipantesModificados())
+			{
+				modificarParticipante(lista.getCodigo(), modif, cnx);
+			}			
 			for (Participante baja : lista.getParticipantesEliminados())
 			{
 				eliminarParticipante(baja, cnx);
@@ -238,6 +242,22 @@ public class AdmPersistenciaListasRegalos {
 		{
 			cmdSqlParticipante.setTimestamp(3, null);
 		}
+		cmdSqlParticipante.execute();		
+	}	
+	
+	private void modificarParticipante(int codigoLista, Participante p, Connection cnx) throws SQLException
+	{
+		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.Participantes SET FechaPago=? WHERE CodigoLista=? AND IdUsuario=?;");
+		if (p.getPagoRealizado())
+		{
+			cmdSqlParticipante.setTimestamp(1, new Timestamp(p.getFechaPago().getTime()));
+		}
+		else
+		{
+			cmdSqlParticipante.setTimestamp(1, null);
+		}
+		cmdSqlParticipante.setInt(2, codigoLista);
+		cmdSqlParticipante.setString(3, p.getUsuario().getIdUsuario());
 		cmdSqlParticipante.execute();		
 	}
 	
