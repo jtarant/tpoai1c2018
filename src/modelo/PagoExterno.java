@@ -2,13 +2,13 @@ package modelo;
 
 import java.util.Date;
 
-public class SistemaPagosDetallePagoDTO 
+public class PagoExterno 
 {
 	private int codigoLista;
 	private String idUsuario;
 	private Date fechaPago;
 	
-	public SistemaPagosDetallePagoDTO(int codigoLista, String idUsuario, Date fechaPago)
+	public PagoExterno(int codigoLista, String idUsuario, Date fechaPago)
 	{
 		this.codigoLista = codigoLista;
 		this.idUsuario = idUsuario;

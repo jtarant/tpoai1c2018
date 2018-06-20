@@ -19,7 +19,7 @@ public class FachadaPagos implements Observer
 	{
 		try
 		{
-			SistemaPagosDetallePagoDTO datosPago = (SistemaPagosDetallePagoDTO)arg1;
+			PagoExterno datosPago = (PagoExterno)arg1;
 			
 			this.registrarPago(datosPago.getCodigoLista(), datosPago.getIdUsuario(), datosPago.getFechaPago());
 		}

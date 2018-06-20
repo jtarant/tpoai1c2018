@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import modelo.DemonioProcesadorPagosExternos;
 import modelo.ExceptionDeNegocio;
 import modelo.Usuario;
 import persistencia.AdmPersistenciaUsuarios;
@@ -13,11 +14,15 @@ public class AdminUsuarios {
 	private static AdminUsuarios instancia;
 	private Hashtable<String, Usuario> usuarios;
 	private Usuario usuarioLogueado;
+	private DemonioProcesadorPagosExternos demonioPagos;
 	
 	private AdminUsuarios()
 	{
 		usuarios = new Hashtable<String, Usuario>();
 		usuarioLogueado = null;
+		// TODO: DUDA, Donde tengo que iniciar el demonio? Puedo iniciarlo desde aca?
+		demonioPagos = new DemonioProcesadorPagosExternos();
+		demonioPagos.start();
 	}
 	
 	public static AdminUsuarios getInstancia()

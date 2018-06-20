@@ -2,11 +2,8 @@ package vista;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -14,12 +11,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import controlador.AdminListaRegalos;
-import controlador.AdminUsuarios;
 import controlador.ListaRegalosView;
-import controlador.ListaResumenView;
 import controlador.ParticipanteView;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 
 public class DatosPagos extends JDialog {
@@ -81,7 +76,10 @@ public class DatosPagos extends JDialog {
 		for(ParticipanteView p : lista.getParticipantes()) 
 		{
 			fila[0] = p.getIdUsuario();
-			fila[1] = p.getFechaPago();
+			if (p.getFechaPago() != null)
+				fila[1] = new SimpleDateFormat("dd/MM/yyyy").format(p.getFechaPago());
+			else
+				fila[1] = "";
 			fila[2] = lista.getMontoPorParticipante();
 			model.addRow(fila);
 		}
