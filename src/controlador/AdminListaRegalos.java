@@ -1,15 +1,14 @@
 package controlador;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import modelo.EstadoListaRegalos;
 import modelo.ExceptionDeNegocio;
 import modelo.ListaRegalos;
+import modelo.NotificadorEmail;
 import modelo.Participante;
 import modelo.Usuario;
 import persistencia.AdmPersistenciaListasRegalos;
@@ -133,7 +132,11 @@ public class AdminListaRegalos {
 		{
 			// Si no lo encontre, voy a la base a buscarlo y si estaba, lo agrego a la coleccion para tenerlo cacheado
 			lista = AdmPersistenciaListasRegalos.getInstancia().buscar(codigo);
-			if (lista != null) listas.put(codigo, lista);
+			if (lista != null)
+			{
+				listas.put(codigo, lista);
+				lista.addObserver(NotificadorEmail.getInstancia());
+			}
 			return lista;
 		}
 	}

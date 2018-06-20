@@ -26,7 +26,7 @@ public class ListaRegalosView
 		setFechaInicio(fechaInicio);
 		setFechaFin(fechaFin);
 		setEstado(estado);
-		setMontoRecaudado(monto);
+		setMontoRecaudado(montoRecaudado);
 		this.participantes = participantes;
 	}
 	

@@ -5,13 +5,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Observable;
 
 import controlador.ListaRegalosView;
 import controlador.ParticipanteView;
 import persistencia.AdmPersistenciaListasRegalos;
 import persistencia.AdmPersistenciaUsuarios;
 
-public class ListaRegalos 
+public class ListaRegalos extends Observable
 {
 	private Usuario admin;
 	private Hashtable<String,Participante> participantes;
@@ -45,6 +46,9 @@ public class ListaRegalos
 			agregarParticipante(new Participante(usr));
 		}
 		AdmPersistenciaListasRegalos.getInstancia().insertar(this);
+		addObserver(NotificadorEmail.getInstancia());
+		setChanged();
+		notifyObservers(nuevos);
 		resetearCambiosParticipantes();
 	}
 
@@ -186,6 +190,8 @@ public class ListaRegalos
 	public void actualizar() throws Exception
 	{
 		AdmPersistenciaListasRegalos.getInstancia().actualizar(this);
+		setChanged();
+		notifyObservers(nuevos);
 		resetearCambiosParticipantes();
 	}
 	
