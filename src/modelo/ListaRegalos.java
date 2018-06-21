@@ -176,7 +176,7 @@ public class ListaRegalos extends Observable
 		
 		for (Participante p: getParticipantes())
 		{
-			pv = new ParticipanteView(p.getUsuario().getIdUsuario(), p.getFechaPago());
+			pv = new ParticipanteView(p.getUsuario().getIdUsuario(), p.getFechaPago(), p.getMontoPagado());
 			partv.add(pv);
 		}
 		return new ListaRegalosView(getCodigo(), getAdmin().getIdUsuario(), getFechaAgasajo(), getNombreAgasajado(), getMontoPorParticipante(), getFechaInicio(), getFechaFin(), getMontoRecaudado(), partv);
@@ -220,6 +220,7 @@ public class ListaRegalos extends Observable
 		else
 		{
 			p.setFechaPago(fechaPago);
+			p.setMontoPagado(getMontoPorParticipante());	// Asumo que pagan el total, dado que el monto no viene en el archivo
 		}
 		if (!nuevos.contains(p))
 		{
@@ -247,7 +248,7 @@ public class ListaRegalos extends Observable
 		{
 			if (p.getPagoRealizado())
 			{
-				monto = monto + getMontoPorParticipante();
+				monto = monto + p.getMontoPagado();
 			}
 		}
 		return monto;

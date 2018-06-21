@@ -129,7 +129,7 @@ public class AdmPersistenciaListasRegalos {
 				lista = new ListaRegalos(resultLista.getInt(1), admin, resultLista.getDate(3), resultLista.getString(4), resultLista.getFloat(5), resultLista.getDate(6), resultLista.getDate(7), EstadoListaRegalos.fromInt(resultLista.getInt(8)));
 				
 				/* PARTICIPANTES */
-				PreparedStatement cmdSqlParticipante = cnx.prepareStatement("SELECT IdUsuario,FechaPago FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
+				PreparedStatement cmdSqlParticipante = cnx.prepareStatement("SELECT IdUsuario,FechaPago,MontoPagado FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
 				cmdSqlParticipante.setInt(1, codigo);
 				ResultSet resultParticipantes = cmdSqlParticipante.executeQuery();
 
@@ -138,7 +138,7 @@ public class AdmPersistenciaListasRegalos {
 					Usuario p = AdmPersistenciaUsuarios.getInstancia().buscar(resultParticipantes.getString(1));
 					if (p != null)
 					{
-						lista.agregarParticipante(new Participante(p, resultParticipantes.getDate(2)));
+						lista.agregarParticipante(new Participante(p, resultParticipantes.getDate(2), resultParticipantes.getFloat(3)));
 					}
 				}
 				lista.resetearCambiosParticipantes();
@@ -231,7 +231,7 @@ public class AdmPersistenciaListasRegalos {
 	
 	private void insertarParticipante(int codigoLista, Participante p, Connection cnx) throws SQLException
 	{
-		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.Participantes (CodigoLista,IdUsuario,FechaPago) VALUES (?,?,?);");
+		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.Participantes (CodigoLista,IdUsuario,FechaPago,MontoPagado) VALUES (?,?,?,?);");
 		cmdSqlParticipante.setInt(1, codigoLista);
 		cmdSqlParticipante.setString(2, p.getUsuario().getIdUsuario());
 		if (p.getPagoRealizado())
@@ -242,12 +242,13 @@ public class AdmPersistenciaListasRegalos {
 		{
 			cmdSqlParticipante.setTimestamp(3, null);
 		}
+		cmdSqlParticipante.setFloat(4, p.getMontoPagado());
 		cmdSqlParticipante.execute();		
 	}	
 	
 	private void modificarParticipante(int codigoLista, Participante p, Connection cnx) throws SQLException
 	{
-		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.Participantes SET FechaPago=? WHERE CodigoLista=? AND IdUsuario=?;");
+		PreparedStatement cmdSqlParticipante = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.Participantes SET FechaPago=?,MontoPagado=? WHERE CodigoLista=? AND IdUsuario=?;");
 		if (p.getPagoRealizado())
 		{
 			cmdSqlParticipante.setTimestamp(1, new Timestamp(p.getFechaPago().getTime()));
@@ -256,8 +257,9 @@ public class AdmPersistenciaListasRegalos {
 		{
 			cmdSqlParticipante.setTimestamp(1, null);
 		}
-		cmdSqlParticipante.setInt(2, codigoLista);
-		cmdSqlParticipante.setString(3, p.getUsuario().getIdUsuario());
+		cmdSqlParticipante.setFloat(2, p.getMontoPagado());
+		cmdSqlParticipante.setInt(3, codigoLista);
+		cmdSqlParticipante.setString(4, p.getUsuario().getIdUsuario());
 		cmdSqlParticipante.execute();		
 	}
 	

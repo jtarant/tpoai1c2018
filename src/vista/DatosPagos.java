@@ -80,7 +80,7 @@ public class DatosPagos extends JDialog {
 				fila[1] = new SimpleDateFormat("dd/MM/yyyy").format(p.getFechaPago());
 			else
 				fila[1] = "";
-			fila[2] = lista.getMontoPorParticipante();
+			fila[2] = p.getMontoPagado();
 			model.addRow(fila);
 		}
 		table.setModel(model);
