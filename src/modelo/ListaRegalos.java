@@ -246,10 +246,7 @@ public class ListaRegalos extends Observable
 		float monto = 0;
 		for (Participante p: getParticipantes())
 		{
-			if (p.getPagoRealizado())
-			{
-				monto = monto + p.getMontoPagado();
-			}
+			monto = monto + p.getMontoPagado();
 		}
 		return monto;
 	}

@@ -12,6 +12,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import controlador.AdminDemonioListas;
 import controlador.AdminDemonioPagos;
 import controlador.AdminListaRegalos;
 import controlador.AdminUsuarios;
@@ -33,7 +34,6 @@ import javax.swing.JButton;
 import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.FlowLayout;
@@ -61,10 +61,13 @@ public class VentanaPrincipal extends JFrame {
 				try 
 				{
 					AdminDemonioPagos.getInstancia().iniciar();
+					AdminDemonioListas.getInstancia().iniciar();
 					
 					VentanaPrincipal frame = new VentanaPrincipal();
-					frame.setVisible(true);
-				} catch (Exception e) {
+					frame.setVisible(true);					
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -214,7 +217,7 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		
-		btnPagos = new JButton("Pagos");
+		btnPagos = new JButton("Ver Pagos");
 		btnPagos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{

@@ -313,7 +313,7 @@ public class DatosListaRegalos extends JDialog {
 		
 		if (txtNombreAgasajado.getText().trim().length() == 0) msgError.append("* Debe ingresar el nombre del agasajado.\n");
 		if (!ValidadorTexto.esFechaValida(mskFechaAgasajo.getText())) msgError.append("* Debe ingresar una fecha de agasajo valida.\n");
-		if (!ValidadorTexto.esMonedaValida(mskMonto.getText())) msgError.append("* Debe ingresar un monto valido.\n");
+		if (!ValidadorTexto.esMonedaValida(mskMonto.getText())) msgError.append("* Debe ingresar un monto valido y mayor a 0.\n");
 		if (!ValidadorTexto.esFechaValida(mskFechaInicio.getText())) msgError.append("* Debe ingresar una fecha de inicio valida.\n");
 		if (!ValidadorTexto.esFechaValida(mskFechaFin.getText())) msgError.append("* Debe ingresar una fecha de fin valida.\n");
 		return msgError.toString();

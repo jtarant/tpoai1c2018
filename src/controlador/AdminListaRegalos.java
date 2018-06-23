@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import modelo.EstadoListaRegalos;
 import modelo.ExceptionDeNegocio;
 import modelo.ListaRegalos;
 import modelo.NotificadorEmail;
@@ -36,7 +37,7 @@ public class AdminListaRegalos {
 		try
 		{
 			ListaRegalos lista = new ListaRegalos(idUsuarioAdmin, fechaAgasajo, nombreAgasajado, monto, fechaInicio, fechaFin, idParticipantes);
-			listas.put(lista.getCodigo(), lista);
+			agregarCache(lista);
 		}
 		catch (Exception e)
 		{
@@ -94,7 +95,7 @@ public class AdminListaRegalos {
 			}
 			
 			lista.actualizar();
-			listas.replace(lista.getCodigo(), lista);
+			actualizarCache(lista);
 		}
 		catch (Exception e)
 		{
@@ -134,7 +135,7 @@ public class AdminListaRegalos {
 			lista = AdmPersistenciaListasRegalos.getInstancia().buscar(codigo);
 			if (lista != null)
 			{
-				listas.put(codigo, lista);
+				agregarCache(lista);
 				lista.addObserver(NotificadorEmail.getInstancia());
 			}
 			return lista;
@@ -162,6 +163,7 @@ public class AdminListaRegalos {
 		{
 			lista.quitarParticipante(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario());
 			lista.actualizar();
+			actualizarCache(lista);
 		}
 	}
 	
@@ -172,7 +174,32 @@ public class AdminListaRegalos {
 		{
 			lista.registrarPago(idUsuario, fecha);
 			lista.actualizar();
+			actualizarCache(lista);
 		}
 		else throw new ExceptionDeNegocio("La lista " + Integer.toString(codigoLista) + " no existe.");
+	}
+
+	public void procesarProximasCierre() throws Exception 
+	{
+		int DIAS_ANTES_CIERRE = 3;
+		List<ListaRegalos> vencen = AdmPersistenciaListasRegalos.getInstancia().obtenerProximasCierre(DIAS_ANTES_CIERRE);
+		
+		for (ListaRegalos lista : vencen)
+		{
+			agregarCache(lista);
+			lista.addObserver(NotificadorEmail.getInstancia());
+			lista.setEstado(EstadoListaRegalos.PROXIMO_CIERRE);
+			lista.actualizar();
+			actualizarCache(lista);
+		}	
+	}
+	
+	private void agregarCache(ListaRegalos lista)
+	{
+		this.listas.put(lista.getCodigo(), lista);
+	}
+	private void actualizarCache(ListaRegalos lista)
+	{
+		this.listas.replace(lista.getCodigo(), lista);
 	}
 }

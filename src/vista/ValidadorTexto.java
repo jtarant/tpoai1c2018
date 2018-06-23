@@ -1,7 +1,6 @@
 package vista;
 
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -24,9 +23,12 @@ public class ValidadorTexto {
 	{
 		try 
 		{
-			NumberFormat.getInstance().parse(valor);
-			return true;
-		} catch (ParseException e) {
+			float monto = Float.parseFloat(valor);
+			if (monto <= 0)
+				return false;
+			else
+				return true;
+		} catch (NumberFormatException e) {
 			return false;
 		}
 	}

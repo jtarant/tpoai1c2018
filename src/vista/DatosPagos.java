@@ -16,16 +16,19 @@ import controlador.ParticipanteView;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
 
 public class DatosPagos extends JDialog {
 	private JTable table;
 	private final JPanel contentPanel = new JPanel();
 	private ListaRegalosView lista;
+	private JLabel lblMontoRecaudado;
 
 	/**
 	 * Create the dialog.
 	 */
 	public DatosPagos(ListaRegalosView lista) {
+		setResizable(false);
 		setModal(true);
 		setBounds(100, 100, 491, 488);
 		getContentPane().setLayout(new BorderLayout());
@@ -54,6 +57,9 @@ public class DatosPagos extends JDialog {
 						setVisible(false);
 					}
 				});
+				
+				lblMontoRecaudado = new JLabel("Monto recaudado");
+				buttonPane.add(lblMontoRecaudado);
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
@@ -83,6 +89,7 @@ public class DatosPagos extends JDialog {
 			fila[2] = p.getMontoPagado();
 			model.addRow(fila);
 		}
+		lblMontoRecaudado.setText("Monto recaudado ($): " + String.format("%.2f", lista.getMontoRecaudado()));
 		table.setModel(model);
 		table.validate();
 	}

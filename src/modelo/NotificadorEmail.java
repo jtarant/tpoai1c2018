@@ -33,21 +33,35 @@ public class NotificadorEmail implements Observer
 		
 		try
 		{
-			// El primer argumento es la lista que estoy observando, el segundo son los participantes a notificar
+			// El primer argumento es la lista que estoy observando
 			ListaRegalos lista = (ListaRegalos)arg0;
-			if (arg1 != null)
-			{
-				@SuppressWarnings("unchecked")
-				List<Participante> participantesANotificar = ((List<Participante>)arg1);
-				participantesANotificar.forEach(p -> destinatarios.add(p.getUsuario().getEmail()));
-			}
+
 			switch (lista.getEstado()) 
 			{
 				case ABIERTA:
 				{
-					if (!destinatarios.isEmpty())
-						email = new EmailInicioLista(destinatarios, lista.getNombreAgasajado(), lista.getMontoPorParticipante());
+					// En el parametro arg1, tengo solo los nuevos participantes que se agregaron
+					if (arg1 != null)
+					{
+						@SuppressWarnings("unchecked")
+						List<Participante> participantesANotificar = ((List<Participante>)arg1);
+						participantesANotificar.forEach(p -> destinatarios.add(p.getUsuario().getEmail()));
+						
+						if (!destinatarios.isEmpty())
+							email = new EmailInicioLista(destinatarios, lista.getNombreAgasajado(), lista.getMontoPorParticipante());						
+					}					
 					break;				
+				}
+				case PROXIMO_CIERRE:
+				{
+					// Obtengo de la lista solo los participantes que no pagaron
+					for (Participante p : lista.getParticipantes())
+					{
+						if (!p.getPagoRealizado()) destinatarios.add(p.getUsuario().getEmail());
+					}
+					if (!destinatarios.isEmpty())
+						email = new EmailProximoCierre(destinatarios, lista.getNombreAgasajado(), lista.getMontoPorParticipante());
+					break;
 				}
 				case CERRADA:
 				{
