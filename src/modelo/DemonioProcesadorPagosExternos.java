@@ -7,7 +7,7 @@ public class DemonioProcesadorPagosExternos extends Thread {
 		System.out.println("* Demonio procesador de pagos iniciado.");
 		
 		ProcesadorNovedadesPagos novedades = new ProcesadorNovedadesPagos();
-		novedades.addObserver(new FachadaPagos());	// TODO: DUDA: El facade tiene que ser singleton?
+		novedades.addObserver(new FachadaPagos());
 		while (true)
 		{
 			try 

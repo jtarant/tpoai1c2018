@@ -14,8 +14,9 @@ public class ProcesadorNovedadesPagos extends Observable
 	
 	public ProcesadorNovedadesPagos()
 	{
-		folderEntrada = System.getProperty("user.dir") + "\\pagos pendientes\\";
-		folderSalida = System.getProperty("user.dir") + "\\pagos procesados\\";		
+		String pathActual = System.getProperty("user.dir");
+		folderEntrada = pathActual + "\\pagos pendientes\\";
+		folderSalida = pathActual + "\\pagos procesados\\";		
 		System.out.println("entrada: " + folderEntrada);
 		System.out.println("salida: " + folderSalida);
 		File dirEntrada = new File(folderEntrada);

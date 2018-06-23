@@ -8,7 +8,6 @@ import controlador.AdminListaRegalos;
 
 public class FachadaPagos implements Observer 
 {
-	// TODO: Duda, la fechada va en negocio o en controlador?
 	public void registrarPago(int codigoLista, String idUsuario, Date fechaPago) throws Exception
 	{
 		AdminListaRegalos.getInstancia().registrarPago(codigoLista, idUsuario, fechaPago);
