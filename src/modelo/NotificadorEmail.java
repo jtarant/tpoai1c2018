@@ -24,21 +24,26 @@ public class NotificadorEmail implements Observer
 
 	private NotificadorEmail()
 	{
-		props = new Properties();
-		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.port", "587");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-		smtpUsuario = "uadetpoapi@gmail.com";
-		smtpPassword = "tr4b4j0Ap1";
-		de = "uadetpoapi@gmail.com";
-		session = Session.getInstance(props,
-				  new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(smtpUsuario, smtpPassword);
-					}
-				  });
+		try
+		{
+			props = new Properties();
+			props.load(getClass().getClassLoader().getResourceAsStream("ConfigEmail.txt"));
+			props.put("mail.smtp.ssl.trust", props.getProperty("mail.smtp.host"));
+			smtpUsuario = props.getProperty("smtpUsuario");
+			smtpPassword = props.getProperty("smtpPassword");
+			de = props.getProperty("de");
+			session = Session.getInstance(props,
+					  new javax.mail.Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(smtpUsuario, smtpPassword);
+						}
+					  });
+		}
+		catch (Exception e)
+		{
+			System.out.println("Error al inicializar la configuracion de emails: " + e.getMessage());
+			session = null;
+		}
 	}
 	
 	public static NotificadorEmail getInstancia()
@@ -118,11 +123,15 @@ public class NotificadorEmail implements Observer
 		System.out.println("Enviando mail a: " + destinatarios);
 		System.out.println(texto);
 
-		Message message = new MimeMessage(session);
-		message.setFrom(new InternetAddress(de));
-		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatarios));
-		message.setSubject(email.getAsunto());
-		message.setContent(texto, "text/html; charset=utf-8");
-		Transport.send(message);
+		if (session != null)
+		{
+			Message message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(de));
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatarios));
+			message.setSubject(email.getAsunto());
+			message.setContent(texto, "text/html; charset=utf-8");
+			Transport.send(message);
+			System.out.println("enviado correctamente.");
+		}
 	}
 }

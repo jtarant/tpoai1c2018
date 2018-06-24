@@ -28,8 +28,12 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.JLabel;
@@ -153,8 +157,6 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		JPanel panelSup = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panelSup.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
 		panelSup.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		contentPane.add(panelSup, BorderLayout.PAGE_START);
 		JPanel panelInf = new JPanel();
@@ -178,7 +180,8 @@ public class VentanaPrincipal extends JFrame {
 				formListaRegalos.dispose();
 			}
 		});
-		panelSup.add(btnNuevaLista);
+		panelSup.setLayout(new BorderLayout(0, 0));
+		panelSup.add(btnNuevaLista, BorderLayout.LINE_START);
 		
 		table = new JTable();
 		table.setFillsViewportHeight(true);
@@ -322,7 +325,20 @@ public class VentanaPrincipal extends JFrame {
 		
 		lblNombreUsuario = new JLabel("");
 		lblNombreUsuario.setHorizontalAlignment(SwingConstants.CENTER);
-		panelSup.add(lblNombreUsuario);
+		panelSup.add(lblNombreUsuario, BorderLayout.CENTER);
+		
+		JButton btnRefresh = new JButton("");
+		btnRefresh.setToolTipText("Refresh");
+		Image img = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
+		btnRefresh.setIcon(new ImageIcon(img));
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				AdminListaRegalos.getInstancia().limpiarCache();
+				LlenarGrilla();
+			}
+		});
+		panelSup.add(btnRefresh, BorderLayout.LINE_END);
 		
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {

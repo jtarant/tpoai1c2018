@@ -16,9 +16,11 @@ public class ProcesadorNovedadesPagos extends Observable
 	{
 		String pathActual = System.getProperty("user.dir");
 		folderEntrada = pathActual + "\\pagos pendientes\\";
-		folderSalida = pathActual + "\\pagos procesados\\";		
+		folderSalida = pathActual + "\\pagos procesados\\";
+		
 		System.out.println("entrada: " + folderEntrada);
 		System.out.println("salida: " + folderSalida);
+		
 		File dirEntrada = new File(folderEntrada);
 		File dirSalida = new File(folderSalida);
 		if (!dirEntrada.exists()) dirEntrada.mkdir();

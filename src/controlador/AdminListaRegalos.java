@@ -114,7 +114,7 @@ public class AdminListaRegalos {
 				throw new ExceptionDeNegocio("Solo el usuario administrador de esta lista o el sysadmin pueden eliminarla.");
 			}
 			lista.eliminar();
-			this.listas.remove(codigo);
+			eliminarCache(codigo);
 		}
 		catch (Exception e)
 		{
@@ -169,6 +169,8 @@ public class AdminListaRegalos {
 	
 	public void registrarPago(int codigoLista, String idUsuario, Date fecha) throws Exception
 	{
+		eliminarCache(codigoLista);	// Quiero asegurarme tener la version mas reciente de la lista para actualizar los pagos
+		
 		ListaRegalos lista = this.buscar(codigoLista);
 		if (lista != null)
 		{
@@ -201,5 +203,16 @@ public class AdminListaRegalos {
 	private void actualizarCache(ListaRegalos lista)
 	{
 		this.listas.replace(lista.getCodigo(), lista);
+	}
+	private void eliminarCache(int codigoLista)
+	{
+		if (this.listas.containsKey(codigoLista))
+		{
+			this.listas.remove(codigoLista);
+		}
+	}
+	public void limpiarCache()
+	{
+		this.listas.clear();
 	}
 }

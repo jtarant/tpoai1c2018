@@ -24,7 +24,7 @@ public class FachadaPagos implements Observer
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			System.out.println("Error al registrar pago: " + e.getMessage());
 		}
 	}
 }
