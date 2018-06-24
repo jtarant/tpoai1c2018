@@ -1,23 +1,31 @@
 package modelo;
 
-import java.util.List;
-
 public class EmailInicioLista extends Email
 {
-	private String agasajado;
-	private float monto;
+	private ListaRegalos lista;	
 
-	public EmailInicioLista(List<String> para, String agasajado, float monto) 
+	public EmailInicioLista(String destinatarios, ListaRegalos lista) 
 	{
-		this.para = para;
-		this.agasajado = agasajado;
-		this.monto = monto;
-		this.asunto = "Bienvenido a la lista de regalos";
+		this.lista = lista;
+		setDestinatarios(destinatarios);
+		setAsunto("NUEVA INVITACION - Sistema de Administracion Listas de Regalos");
 	}
 
 	@Override
 	public String getTexto() 
 	{
-		return "bienvenido a la lista de regalos para agasajar a " + agasajado + "\nEl monto a aportar es de " + Float.toString(monto);
+		StringBuilder sbBody = new StringBuilder();
+		sbBody.append("<h3>Estimado/a</h3>");
+		sbBody.append("<br>A partir de hoy estas participando de la lista de regalos creada por ");
+		sbBody.append(lista.getAdmin().getApellido());
+		sbBody.append(", ");
+		sbBody.append(lista.getAdmin().getNombre());
+		sbBody.append(" para agasajar a <b>");
+		sbBody.append(lista.getNombreAgasajado());
+		sbBody.append("</b><br><br>Estamos juntando $: <b>");
+		sbBody.append(String.format("%.2f", lista.getMontoPorParticipante()));
+		sbBody.append("</b> por persona. Gracias!");
+		sbBody.append("<br><br><br>Sistema de Administracion de Listas de Regalos");
+		return sbBody.toString();
 	}
 }

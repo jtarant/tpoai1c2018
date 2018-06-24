@@ -3,6 +3,8 @@ package vista;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -239,6 +241,7 @@ public class DatosUsuario extends JDialog {
 
 	private String getValidacionesFallidas()
 	{
+		final String VALIDACION_EMAIL = "^([\\w-\\.]+){1,64}@([\\w&&[^_]]+){2,255}.[a-z]{2,}$";		
 		StringBuilder msgError = new StringBuilder("");
 		
 		if (txtIDUsuario.getText().trim().length() == 0) msgError.append("* Debe ingresar un nombre (ID) de usuario.\n");
@@ -246,7 +249,16 @@ public class DatosUsuario extends JDialog {
 		if (txtNombre.getText().trim().length() == 0) msgError.append("* Debe ingresar el nombre del usuario.\n");
 		if (txtApellido.getText().trim().length() == 0) msgError.append("* Debe ingresar el apellido del usuario.\n");
 		if (!ValidadorTexto.esFechaValida(mskFNac.getText())) msgError.append("* Debe ingresar la fecha de nacimiento valida.\n");
-		if (txtEmail.getText().trim().length() == 0) msgError.append("* Debe ingresar la direccion de email.\n");
+		if (txtEmail.getText().trim().length() == 0)
+		{
+			msgError.append("* Debe ingresar la direccion de email.\n");
+		}
+		else
+		{
+			Pattern exp = Pattern.compile(VALIDACION_EMAIL);
+			Matcher matcher = exp.matcher(txtEmail.getText().trim());
+			if (!matcher.matches()) msgError.append("* La direccion de email no es valida.");
+		}
 		return msgError.toString();
 	}
 	

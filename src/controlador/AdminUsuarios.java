@@ -58,6 +58,11 @@ public class AdminUsuarios {
 			usr.setSysAdmin(sysAdmin);
 			usr.actualizar();
 			usuarios.replace(usr.getIdUsuario(), usr);
+			// Si modifique el usuario logueado, actualizo sus datos
+			if (getUsuarioLogueado().getIdUsuario().equals(idUsuario))
+			{
+				this.usuarioLogueado = usr;
+			}
 		}
 		catch (Exception e)
 		{

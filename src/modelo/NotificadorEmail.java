@@ -1,21 +1,44 @@
 package modelo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class NotificadorEmail implements Observer
 {
 	private static NotificadorEmail instancia;
 	private String de;
-	private String smtpServer;
 	private String smtpUsuario;
 	private String smtpPassword;
 	private Email email;
+	private Properties props;
+	private Session session;
 
 	private NotificadorEmail()
 	{
+		props = new Properties();
+		props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.port", "587");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+		smtpUsuario = "uadetpoapi@gmail.com";
+		smtpPassword = "tr4b4j0Ap1";
+		de = "uadetpoapi@gmail.com";
+		session = Session.getInstance(props,
+				  new javax.mail.Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(smtpUsuario, smtpPassword);
+					}
+				  });
 	}
 	
 	public static NotificadorEmail getInstancia()
@@ -28,50 +51,53 @@ public class NotificadorEmail implements Observer
 	@Override
 	public void update(Observable arg0, Object arg1) 
 	{
+		// El primer argumento es la lista que estoy observando
+		ListaRegalos lista = (ListaRegalos)arg0;
 		email = null;
-		ArrayList<String> destinatarios = new ArrayList<String>();
+		StringBuilder destinatarios = new StringBuilder();
 		
 		try
 		{
-			// El primer argumento es la lista que estoy observando
-			ListaRegalos lista = (ListaRegalos)arg0;
-
 			switch (lista.getEstado()) 
 			{
 				case ABIERTA:
 				{
-					// En el parametro arg1, tengo solo los nuevos participantes que se agregaron
+					// En el parametro arg1, tengo solo los nuevos participantes que se agregaron, notifico solo a ellos
 					if (arg1 != null)
 					{
 						@SuppressWarnings("unchecked")
-						List<Participante> participantesANotificar = ((List<Participante>)arg1);
-						participantesANotificar.forEach(p -> destinatarios.add(p.getUsuario().getEmail()));
-						
-						if (!destinatarios.isEmpty())
-							email = new EmailInicioLista(destinatarios, lista.getNombreAgasajado(), lista.getMontoPorParticipante());						
-					}					
+						List<Participante> notificarA = ((List<Participante>)arg1);
+						if (!notificarA.isEmpty())
+						{
+							notificarA.forEach(participante -> destinatarios.append(participante.getUsuario().getEmail()+","));
+							email = new EmailInicioLista(destinatarios.toString(), lista);
+						}
+					}		
 					break;				
 				}
 				case PROXIMO_CIERRE:
 				{
-					// Obtengo de la lista solo los participantes que no pagaron
+					// Obtengo de la lista solo los participantes que no pagaron, y notifico solo a ellos
+					Boolean faltaPagar = false;
 					for (Participante p : lista.getParticipantes())
 					{
-						if (!p.getPagoRealizado()) destinatarios.add(p.getUsuario().getEmail());
+						if (!p.getPagoRealizado())
+						{
+							destinatarios.append(p.getUsuario().getEmail()+",");
+							faltaPagar = true;
+						}
 					}
-					if (!destinatarios.isEmpty())
-						email = new EmailProximoCierre(destinatarios, lista.getNombreAgasajado(), lista.getMontoPorParticipante());
+					if (faltaPagar) email = new EmailProximoCierre(destinatarios.toString(), lista);
 					break;
 				}
 				case CERRADA:
 				{
-					email = new EmailAvisoRegalo(lista.getAdmin().getEmail(), lista.getNombreAgasajado(), lista.getMontoRecaudado());
+					email = new EmailAvisoRegalo(lista.getAdmin().getEmail(), lista);
 					break;
-				}				
+				}			
 				default:
 					break;
 			}
-			
 			if (email != null)
 			{
 				this.enviar();
@@ -80,12 +106,23 @@ public class NotificadorEmail implements Observer
 		catch (Exception e)
 		{
 			// Si falla la notificacion, no tiene que fallar la aplicacion, asi que no re-lanzo la excepcion
-			System.out.println("Error al notificar: " + e.getMessage());
+			System.out.println("Error al enviar email: " + e.getMessage());
 		}
 	}
 	
-	private void enviar()
+	private void enviar() throws Exception
 	{
-		System.out.println(email.getTexto());
+		String texto = email.getTexto();
+		String destinatarios = email.getDestinatarios();
+		
+		System.out.println("Enviando mail a: " + destinatarios);
+		System.out.println(texto);
+
+		Message message = new MimeMessage(session);
+		message.setFrom(new InternetAddress(de));
+		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatarios));
+		message.setSubject(email.getAsunto());
+		message.setContent(texto, "text/html; charset=utf-8");
+		Transport.send(message);
 	}
 }

@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -293,7 +294,10 @@ public class DatosListaRegalos extends JDialog {
 		mskFechaAgasajo.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
 		mskMonto.setValue(0);
 		mskFechaInicio.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
-		mskFechaFin.setText(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, 15);
+		mskFechaFin.setText(new SimpleDateFormat("dd/MM/yyyy").format(cal.getTime()));
 		try 
 		{
 			usuariosDisponibles = AdminUsuarios.getInstancia().listarIdNombre();

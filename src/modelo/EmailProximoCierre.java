@@ -1,23 +1,31 @@
 package modelo;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
 
 public class EmailProximoCierre extends Email
 {
-	private String agasajado;
-	private float monto;
+	private ListaRegalos lista;	
 
-	public EmailProximoCierre(List<String> para, String agasajado, float monto) 
+	public EmailProximoCierre(String destinatarios, ListaRegalos lista) 
 	{
-		this.para = para;
-		this.agasajado = agasajado;
-		this.monto = monto;
-		this.asunto = "Recordatorio de proximo cierre de lista de regalos";
+		setDestinatarios(destinatarios);
+		setAsunto("AVISO DE CIERRE LISTA - Sistema de Administracion Listas de Regalos");
+		this.lista = lista;
 	}
 
 	@Override
 	public String getTexto() 
 	{
-		return "La lista de regalos para " + agasajado + " esta proxima a cerrar.\nEl monto a aportar es de " + Float.toString(monto);
+		StringBuilder sbBody = new StringBuilder();
+		sbBody.append("<h3>Estimado/a</h3>");
+		sbBody.append("<br>La lista de regalos para agasajar a <b>");
+		sbBody.append(lista.getNombreAgasajado());
+		sbBody.append("</b> finaliza el <b>");
+		sbBody.append(new SimpleDateFormat("dd/MM/yyyy").format(lista.getFechaFin()));
+		sbBody.append("</b> y aun no hiciste tu aporte.<br>Estamos juntando $ <b>");
+		sbBody.append(String.format("%.2f", lista.getMontoPorParticipante()));
+		sbBody.append("</b> por persona. No te olvides!");
+		sbBody.append("<br><br><br>Sistema de Administracion de Listas de Regalos");
+		return sbBody.toString();
 	}
 }
