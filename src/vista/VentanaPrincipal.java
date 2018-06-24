@@ -12,8 +12,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import controlador.AdminDemonioListas;
-import controlador.AdminDemonioPagos;
 import controlador.AdminListaRegalos;
 import controlador.AdminUsuarios;
 import controlador.ListaRegalosView;
@@ -60,9 +58,6 @@ public class VentanaPrincipal extends JFrame {
 			public void run() {
 				try 
 				{
-					AdminDemonioPagos.getInstancia().iniciar();
-					AdminDemonioListas.getInstancia().iniciar();
-					
 					VentanaPrincipal frame = new VentanaPrincipal();
 					frame.setVisible(true);					
 				} 

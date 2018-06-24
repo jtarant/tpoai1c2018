@@ -29,7 +29,6 @@ public class ProcesadorNovedadesPagos extends Observable
 	{		
 		File folder = new File(folderEntrada);
 		File[] listOfFiles = folder.listFiles();
-		Boolean sinNovedades = true;
 
 		if (listOfFiles != null)
 		{
@@ -38,7 +37,6 @@ public class ProcesadorNovedadesPagos extends Observable
 			    if (file.isFile() && file.getName().toLowerCase().startsWith("pago") && file.getName().toLowerCase().endsWith(".txt")) 
 			    {
 			    	System.out.println("procesando: " + file.getName());
-			    	sinNovedades = false;
 			    	
 			        procesarArchivo(folderEntrada + file.getName());
 			        
@@ -51,10 +49,6 @@ public class ProcesadorNovedadesPagos extends Observable
 			        file.renameTo(destino);
 			    }
 			}
-		}
-		if (sinNovedades)
-		{
-			System.out.println("sin novedades.");
 		}
 	}
 	

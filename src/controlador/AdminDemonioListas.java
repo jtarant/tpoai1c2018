@@ -22,5 +22,10 @@ public class AdminDemonioListas
 	{
 		demonioListas = new DemonioProcesadorListasRegalos();
 		demonioListas.start();
-	}	
+	}
+	
+	public static void main(String args[])
+	{
+		AdminDemonioListas.getInstancia().iniciar();
+	}
 }

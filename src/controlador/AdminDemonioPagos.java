@@ -23,4 +23,9 @@ public class AdminDemonioPagos
 		demonioPagos = new DemonioProcesadorPagosExternos();
 		demonioPagos.start();		
 	}	
+
+	public static void main(String args[])
+	{
+		AdminDemonioPagos.getInstancia().iniciar();
+	}
 }
