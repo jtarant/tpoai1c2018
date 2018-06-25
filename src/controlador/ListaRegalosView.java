@@ -15,8 +15,9 @@ public class ListaRegalosView
 	private Date fechaFin;
 	private int estado;
 	private float montoRecaudado;
+	private Boolean activo;
 	
-	public ListaRegalosView(int codigo, String idUsuarioAdmin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, float montoRecaudado, List<ParticipanteView> participantes)
+	public ListaRegalosView(int codigo, String idUsuarioAdmin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, float montoRecaudado, List<ParticipanteView> participantes, int estado, Boolean activo)
 	{
 		setCodigo(codigo);
 		setAdmin(idUsuarioAdmin);
@@ -26,6 +27,7 @@ public class ListaRegalosView
 		setFechaInicio(fechaInicio);
 		setFechaFin(fechaFin);
 		setEstado(estado);
+		setActivo(activo);
 		setMontoRecaudado(montoRecaudado);
 		this.participantes = participantes;
 	}
@@ -62,6 +64,10 @@ public class ListaRegalosView
 	{
 		this.estado = estado;
 	}
+	public void setActivo(Boolean activo)
+	{
+		this.activo = activo;
+	}
 	public void setMontoRecaudado(float monto)
 	{
 		this.montoRecaudado = monto;
@@ -97,6 +103,10 @@ public class ListaRegalosView
 	public int getEstado()
 	{
 		return estado;
+	}
+	public Boolean getActivo()
+	{
+		return activo;
 	}
 	public float getMontoRecaudado()
 	{

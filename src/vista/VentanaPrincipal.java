@@ -253,29 +253,36 @@ public class VentanaPrincipal extends JFrame {
 					{				
 						int codigo = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
 						ListaRegalosView lista = AdminListaRegalos.getInstancia().obtener(codigo);
-								
-						DatosListaRegalos formListaRegalos = new DatosListaRegalos();
-						formListaRegalos.setCodigo(codigo);
-						formListaRegalos.setNombreAdmin(lista.getidUsuarioAdmin());
-						formListaRegalos.setNombreAgasajado(lista.getNombreAgasajado());
-						formListaRegalos.setFechaAgasajo(lista.getFechaAgasajo());
-						formListaRegalos.setMontoPorParticipante(lista.getMontoPorParticipante());
-						formListaRegalos.setFechaInicio(lista.getFechaInicio());
-						formListaRegalos.setFechaFin(lista.getFechaFin());
-						formListaRegalos.setMontoRecaudado(lista.getMontoRecaudado());
-						List<String> participantes = new ArrayList<String>();
-						for (ParticipanteView p : lista.getParticipantes())
+						
+						if (lista.getEstado()==1)
 						{
-							participantes.add(p.getIdUsuario());
-						}				
-						formListaRegalos.setIdUsuariosParticipantes(participantes);
-						formListaRegalos.setLocationRelativeTo(null);
-						formListaRegalos.setVisible(true);
-						if (!formListaRegalos.getCancelado())
-						{
-							LlenarGrilla();	
+							JOptionPane.showMessageDialog(null, "No se puede modificar una lista cerrada.", "Error", JOptionPane.ERROR_MESSAGE);							
 						}
-						formListaRegalos.dispose();
+						else
+						{								
+							DatosListaRegalos formListaRegalos = new DatosListaRegalos();
+							formListaRegalos.setCodigo(codigo);
+							formListaRegalos.setNombreAdmin(lista.getidUsuarioAdmin());
+							formListaRegalos.setNombreAgasajado(lista.getNombreAgasajado());
+							formListaRegalos.setFechaAgasajo(lista.getFechaAgasajo());
+							formListaRegalos.setMontoPorParticipante(lista.getMontoPorParticipante());
+							formListaRegalos.setFechaInicio(lista.getFechaInicio());
+							formListaRegalos.setFechaFin(lista.getFechaFin());
+							formListaRegalos.setMontoRecaudado(lista.getMontoRecaudado());
+							List<String> participantes = new ArrayList<String>();
+							for (ParticipanteView p : lista.getParticipantes())
+							{
+								participantes.add(p.getIdUsuario());
+							}				
+							formListaRegalos.setIdUsuariosParticipantes(participantes);
+							formListaRegalos.setLocationRelativeTo(null);
+							formListaRegalos.setVisible(true);
+							if (!formListaRegalos.getCancelado())
+							{
+								LlenarGrilla();	
+							}
+							formListaRegalos.dispose();
+						}
 					}
 					else
 					{

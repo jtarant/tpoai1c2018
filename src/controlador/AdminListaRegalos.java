@@ -158,9 +158,14 @@ public class AdminListaRegalos {
 
 	public void dejarDeParticipar(int codigo) throws Exception 
 	{
+		eliminarCache(codigo);	// Quiero asegurarme tener la version mas reciente de la lista para no abandonar una lista cerrada por el demonio
+		
 		ListaRegalos lista = this.buscar(codigo);
 		if (lista != null)
 		{
+			if (lista.getEstado() == EstadoListaRegalos.CERRADA)
+				throw new ExceptionDeNegocio("No podes darte de baja de una lista ya cerrada.");
+			
 			lista.quitarParticipante(AdminUsuarios.getInstancia().getUsuarioLogueado().getIdUsuario());
 			lista.actualizar();
 			actualizarCache(lista);

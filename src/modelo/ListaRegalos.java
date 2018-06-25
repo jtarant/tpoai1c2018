@@ -26,6 +26,7 @@ public class ListaRegalos extends Observable
 	private Date fechaInicio;
 	private Date fechaFin;
 	private EstadoListaRegalos estado;
+	private Boolean activo;
 	
 	public ListaRegalos(String idUsuarioAdmin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, List<String> idParticipantes) throws Exception
 	{
@@ -39,6 +40,7 @@ public class ListaRegalos extends Observable
 		setFechaInicio(fechaInicio);
 		setFechaFin(fechaFin);
 		setEstado(EstadoListaRegalos.ABIERTA);
+		setActivo(true);
 		
 		for (String idParticipante : idParticipantes)
 		{
@@ -52,7 +54,7 @@ public class ListaRegalos extends Observable
 		resetearCambiosParticipantes();
 	}
 
-	public ListaRegalos(int codigo, Usuario admin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, EstadoListaRegalos estado) throws Exception
+	public ListaRegalos(int codigo, Usuario admin, Date fechaAgasajo, String nombreAgasajado, float monto, Date fechaInicio, Date fechaFin, EstadoListaRegalos estado, Boolean activo) throws Exception
 	{
 		participantes = new Hashtable<String,Participante>();
 		resetearCambiosParticipantes();
@@ -64,6 +66,7 @@ public class ListaRegalos extends Observable
 		setFechaInicio(fechaInicio);
 		setFechaFin(fechaFin);
 		setEstado(estado);
+		setActivo(activo);
 	}
 	
 	public void setAdmin(Usuario usr)
@@ -97,6 +100,10 @@ public class ListaRegalos extends Observable
 	public void setEstado(EstadoListaRegalos estado)
 	{
 		this.estado = estado;
+	}
+	public void setActivo(Boolean activo)
+	{
+		this.activo = activo;
 	}
 	
 	public void agregarParticipante(Participante p)
@@ -160,6 +167,10 @@ public class ListaRegalos extends Observable
 	{
 		return estado;
 	}
+	public Boolean getActivo()
+	{
+		return activo;
+	}
 	public Participante getParticipante(String idUsuario)
 	{
 		return participantes.get(idUsuario);
@@ -179,7 +190,7 @@ public class ListaRegalos extends Observable
 			pv = new ParticipanteView(p.getUsuario().getIdUsuario(), p.getFechaPago(), p.getMontoPagado());
 			partv.add(pv);
 		}
-		return new ListaRegalosView(getCodigo(), getAdmin().getIdUsuario(), getFechaAgasajo(), getNombreAgasajado(), getMontoPorParticipante(), getFechaInicio(), getFechaFin(), getMontoRecaudado(), partv);
+		return new ListaRegalosView(getCodigo(), getAdmin().getIdUsuario(), getFechaAgasajo(), getNombreAgasajado(), getMontoPorParticipante(), getFechaInicio(), getFechaFin(), getMontoRecaudado(), partv, getEstado().getValor(), getActivo());
 	}
 
 	public void eliminar() throws Exception 

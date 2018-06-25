@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import modelo.ExceptionDeNegocio;
 import modelo.Usuario;
 
 public class AdmPersistenciaUsuarios {
@@ -43,11 +44,15 @@ public class AdmPersistenciaUsuarios {
 			cmdSql.execute();
 			PoolConexiones.getInstancia().realeaseConnection(cnx);
 		}
+		catch (SQLException se)
+		{
+			if (se.getSQLState().startsWith("23")) throw new ExceptionDeNegocio("Ya existe otro usuario con ese nombre.");
+			else throw se;
+		}
 		catch (Exception e)
 		{
-			System.out.println(e.getMessage());
 			throw e;
-		}
+		}		
 		finally
 		{
 			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
@@ -61,7 +66,7 @@ public class AdmPersistenciaUsuarios {
 		try
 		{
 			cnx = PoolConexiones.getInstancia().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("SELECT * FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE idUsuario=? AND Activo=1");
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT * FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE idUsuario=? AND Activo<>0");
 			cmdSql.setString(1, idUsuario);
 			ResultSet result = cmdSql.executeQuery();
 			if (result.next())
@@ -83,7 +88,7 @@ public class AdmPersistenciaUsuarios {
 		{
 			System.out.println(e.getMessage());
 			throw e;
-		}
+		}		
 		finally
 		{
 			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
@@ -97,7 +102,7 @@ public class AdmPersistenciaUsuarios {
 		try
 		{
 			cnx = PoolConexiones.getInstancia().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("SELECT IdUsuario,Nombre,Apellido FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo=1 ORDER BY IdUsuario");
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT IdUsuario,Nombre,Apellido FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo<>0 ORDER BY IdUsuario");
 			ResultSet result = cmdSql.executeQuery();
 			while (result.next())
 			{
@@ -194,7 +199,7 @@ public class AdmPersistenciaUsuarios {
 		try
 		{
 			cnx = PoolConexiones.getInstancia().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("SELECT COUNT(*) FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo=1");
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT COUNT(*) FROM TPO_AI_TARANTINO_CALISI.dbo.USUARIOS WHERE Activo<>0");
 			ResultSet result = cmdSql.executeQuery();
 			PoolConexiones.getInstancia().realeaseConnection(cnx);
 			result.next();

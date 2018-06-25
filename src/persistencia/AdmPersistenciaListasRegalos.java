@@ -11,6 +11,7 @@ import java.util.List;
 
 import controlador.ListaResumenView;
 import modelo.EstadoListaRegalos;
+import modelo.ExceptionDeNegocio;
 import modelo.ListaRegalos;
 import modelo.Participante;
 import modelo.Usuario;
@@ -37,7 +38,7 @@ public class AdmPersistenciaListasRegalos {
 		{
 			cnx = PoolConexiones.getInstancia().iniciarTransaccion();
 			/* DATOS DE LA LISTA */
-			PreparedStatement cmdSqlLista = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos (IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado) VALUES (?,?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement cmdSqlLista = cnx.prepareStatement("INSERT INTO TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos (IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado,Activo) VALUES (?,?,?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
 			cmdSqlLista.setString(1, lista.getAdmin().getIdUsuario());
 			cmdSqlLista.setTimestamp(2, new Timestamp(lista.getFechaAgasajo().getTime()));
 			cmdSqlLista.setString(3, lista.getNombreAgasajado());
@@ -45,6 +46,7 @@ public class AdmPersistenciaListasRegalos {
 			cmdSqlLista.setTimestamp(5, new Timestamp(lista.getFechaInicio().getTime()));
 			cmdSqlLista.setTimestamp(6, new Timestamp(lista.getFechaFin().getTime()));
 			cmdSqlLista.setInt(7, lista.getEstado().getValor());
+			cmdSqlLista.setBoolean(8, lista.getActivo());
 			cmdSqlLista.execute();
 			clavesGeneradas = cmdSqlLista.getGeneratedKeys();
 			if (clavesGeneradas.next())
@@ -58,6 +60,12 @@ public class AdmPersistenciaListasRegalos {
 				insertarParticipante(lista.getCodigo(), participante, cnx);
 			}
 			cnx.commit();
+		}
+		catch (SQLException se)
+		{
+			if (cnx != null) cnx.rollback();
+			if (se.getSQLState().startsWith("S0001")) throw new ExceptionDeNegocio("Ya existe una lista para este agasajado con la misma fecha de agasajo.");
+			else throw se;
 		}
 		catch (Exception e)
 		{
@@ -75,18 +83,19 @@ public class AdmPersistenciaListasRegalos {
 	{
 		Connection cnx = null;
 		List<ListaResumenView> listas = new ArrayList<ListaResumenView>();
+		StringBuilder sbQuery = new StringBuilder();
 
 		try
 		{
 			cnx = PoolConexiones.getInstancia().getConnection();
-			String sql = "SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado " + 
-					"FROM [TPO_AI_TARANTINO_CALISI].[dbo].[ListasRegalos] WHERE IdUsuarioAdmin=? " + 
-					"UNION " + 
-					"SELECT lst.CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado " + 
-					"FROM [TPO_AI_TARANTINO_CALISI].[dbo].[ListasRegalos] AS lst " + 
-					"INNER JOIN [TPO_AI_TARANTINO_CALISI].[dbo].[Participantes] as part ON part.CodigoLista=lst.CodigoLista " + 
-					"WHERE part.IdUsuario=?";
-			PreparedStatement cmdSql = cnx.prepareStatement(sql);
+			sbQuery.append("SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado,Activo ");
+			sbQuery.append("FROM [TPO_AI_TARANTINO_CALISI].[dbo].[ListasRegalos] WHERE IdUsuarioAdmin=? AND Activo<>0 ");
+			sbQuery.append("UNION ");
+			sbQuery.append("SELECT lst.CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado,Activo ");
+			sbQuery.append("FROM [TPO_AI_TARANTINO_CALISI].[dbo].[ListasRegalos] AS lst ");
+			sbQuery.append("INNER JOIN [TPO_AI_TARANTINO_CALISI].[dbo].[Participantes] as part ON part.CodigoLista=lst.CodigoLista ");
+			sbQuery.append("WHERE part.IdUsuario=? AND Activo<>0");
+			PreparedStatement cmdSql = cnx.prepareStatement(sbQuery.toString());
 			cmdSql.setString(1, usr.getIdUsuario());
 			cmdSql.setString(2, usr.getIdUsuario());
 			ResultSet result = cmdSql.executeQuery();
@@ -120,13 +129,13 @@ public class AdmPersistenciaListasRegalos {
 			
 			cnx = PoolConexiones.getInstancia().getConnection();
 			/* DATOS DE LA LISTA */
-			PreparedStatement cmdSqlLista = cnx.prepareStatement("SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=?");
+			PreparedStatement cmdSqlLista = cnx.prepareStatement("SELECT CodigoLista,IdUsuarioAdmin,FechaAgasajo,NombreAgasajado,MontoPorParticipante,FechaInicio,FechaFin,Estado,Activo FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=? AND Activo<>0");
 			cmdSqlLista.setInt(1, codigo);
 			ResultSet resultLista = cmdSqlLista.executeQuery();
 			if (resultLista.next())
 			{
 				Usuario admin = AdmPersistenciaUsuarios.getInstancia().buscar(resultLista.getString(2));
-				lista = new ListaRegalos(resultLista.getInt(1), admin, resultLista.getDate(3), resultLista.getString(4), resultLista.getFloat(5), resultLista.getDate(6), resultLista.getDate(7), EstadoListaRegalos.fromInt(resultLista.getInt(8)));
+				lista = new ListaRegalos(resultLista.getInt(1), admin, resultLista.getDate(3), resultLista.getString(4), resultLista.getFloat(5), resultLista.getDate(6), resultLista.getDate(7), EstadoListaRegalos.fromInt(resultLista.getInt(8)), resultLista.getBoolean(9));
 				
 				/* PARTICIPANTES */
 				PreparedStatement cmdSqlParticipante = cnx.prepareStatement("SELECT IdUsuario,FechaPago,MontoPagado FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
@@ -164,12 +173,14 @@ public class AdmPersistenciaListasRegalos {
 		{
 			cnx = PoolConexiones.getInstancia().iniciarTransaccion();
 			/* ELIMINO PARTICIPANTES */
+			/* Comentado por realizar eliminacion logica
 			PreparedStatement cmdSqlParticipante = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.Participantes WHERE CodigoLista=?");
 			cmdSqlParticipante.setInt(1, lista.getCodigo());
 			cmdSqlParticipante.execute();
+			/*
 			
-			/* ELIMINO LA LISTA */
-			PreparedStatement cmdSqlLista = cnx.prepareStatement("DELETE FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE CodigoLista=?");
+			/* ELIMINO LA LISTA (Eliminacion logica) */
+			PreparedStatement cmdSqlLista = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos SET Activo=0 WHERE CodigoLista=?");
 			cmdSqlLista.setInt(1, lista.getCodigo());
 			cmdSqlLista.execute();
 			cnx.commit();
@@ -206,14 +217,15 @@ public class AdmPersistenciaListasRegalos {
 				eliminarParticipante(baja, cnx);
 			}
 			/* ACTUALIZACION DE LA LISTA */
-			PreparedStatement cmdSqlLista = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos SET FechaAgasajo=?, NombreAgasajado=?, MontoPorParticipante=?, FechaInicio=?, FechaFin=?, Estado=? WHERE CodigoLista=?");
+			PreparedStatement cmdSqlLista = cnx.prepareStatement("UPDATE TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos SET FechaAgasajo=?, NombreAgasajado=?, MontoPorParticipante=?, FechaInicio=?, FechaFin=?, Estado=?, Activo=? WHERE CodigoLista=?");
 			cmdSqlLista.setTimestamp(1, new Timestamp(lista.getFechaAgasajo().getTime()));
 			cmdSqlLista.setString(2, lista.getNombreAgasajado());
 			cmdSqlLista.setFloat(3, lista.getMontoPorParticipante());
 			cmdSqlLista.setTimestamp(4, new Timestamp(lista.getFechaInicio().getTime()));
 			cmdSqlLista.setTimestamp(5, new Timestamp(lista.getFechaFin().getTime()));
 			cmdSqlLista.setInt(6, lista.getEstado().getValor());
-			cmdSqlLista.setInt(7, lista.getCodigo());
+			cmdSqlLista.setBoolean(7, lista.getActivo());
+			cmdSqlLista.setInt(8, lista.getCodigo());
 			cmdSqlLista.execute();
 			cnx.commit();
 		}
@@ -279,7 +291,7 @@ public class AdmPersistenciaListasRegalos {
 		try
 		{
 			cnx = PoolConexiones.getInstancia().getConnection();
-			PreparedStatement cmdSql = cnx.prepareStatement("SELECT CodigoLista FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE Estado=? AND DATEDIFF(\"d\",GETDATE(),FechaFin)<=? AND DATEDIFF(\"d\",GETDATE(),FechaFin)>0");
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT CodigoLista FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE Activo<>0 AND Estado=? AND DATEDIFF(\"d\",GETDATE(),FechaFin)<=? AND DATEDIFF(\"d\",GETDATE(),FechaFin)>=0");
 			cmdSql.setInt(1, EstadoListaRegalos.ABIERTA.getValor());
 			cmdSql.setInt(2, dias);
 			ResultSet result = cmdSql.executeQuery();
