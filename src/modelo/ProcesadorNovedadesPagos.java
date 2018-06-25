@@ -88,7 +88,7 @@ public class ProcesadorNovedadesPagos extends Observable
 						System.out.println("Linea " + nroLinea.toString() + ": " + e.getMessage());
 					}
 				}
-				nroLinea =+ 1;
+				nroLinea = nroLinea + 1;
 			}
 		}
 		catch (Exception e)

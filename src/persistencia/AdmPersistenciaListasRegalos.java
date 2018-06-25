@@ -314,4 +314,35 @@ public class AdmPersistenciaListasRegalos {
 			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
 		}		
 	}
+	
+	public List<ListaRegalos> obtenerActivasVencidas() throws Exception 
+	{
+		Connection cnx = null;
+		List<ListaRegalos> listas = new ArrayList<ListaRegalos>();
+
+		try
+		{
+			cnx = PoolConexiones.getInstancia().getConnection();
+			PreparedStatement cmdSql = cnx.prepareStatement("SELECT CodigoLista FROM TPO_AI_TARANTINO_CALISI.dbo.ListasRegalos WHERE Activo<>0 AND FechaFin<CONVERT(DATE, GETDATE()) AND Estado<>?");
+			cmdSql.setInt(1, EstadoListaRegalos.CERRADA.getValor());
+			ResultSet result = cmdSql.executeQuery();
+			
+			while (result.next())
+			{
+				ListaRegalos lista = buscar(result.getInt(1));
+				if (lista != null) listas.add(lista);
+			}
+			PoolConexiones.getInstancia().realeaseConnection(cnx);
+			return listas;
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally
+		{
+			if (cnx != null) PoolConexiones.getInstancia().realeaseConnection(cnx); 
+		}		
+	}	
 }

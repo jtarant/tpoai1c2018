@@ -13,6 +13,7 @@ public class DemonioProcesadorListasRegalos extends Thread {
 			{
 				Thread.sleep(1000*15);
 				AdminListaRegalos.getInstancia().procesarProximasCierre();
+				AdminListaRegalos.getInstancia().procesarVencidas();
 			} 
 			catch (InterruptedException e) 
 			{

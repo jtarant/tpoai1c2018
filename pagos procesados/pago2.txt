@@ -1,1 +1,6 @@
-1012, sole, 20/06/2018
+8, mmeza, 16/06/2018
+8, lcalisi, 2/06/2018
+8,sole,25/06/2018
+linea no valida
+8,usuario_que_no_existe,01/01/2018
+900,mmeza,16/06/2018

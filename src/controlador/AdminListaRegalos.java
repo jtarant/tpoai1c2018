@@ -200,6 +200,20 @@ public class AdminListaRegalos {
 			actualizarCache(lista);
 		}	
 	}
+
+	public void procesarVencidas() throws Exception 
+	{
+		List<ListaRegalos> cerrar = AdmPersistenciaListasRegalos.getInstancia().obtenerActivasVencidas();
+		
+		for (ListaRegalos lista : cerrar)
+		{
+			agregarCache(lista);
+			lista.addObserver(NotificadorEmail.getInstancia());
+			lista.setEstado(EstadoListaRegalos.CERRADA);
+			lista.actualizar();
+			actualizarCache(lista);
+		}
+	}
 	
 	private void agregarCache(ListaRegalos lista)
 	{

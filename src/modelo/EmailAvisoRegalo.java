@@ -21,7 +21,7 @@ public class EmailAvisoRegalo extends Email
 		sbBody.append(lista.getNombreAgasajado());
 		sbBody.append("</b> esta listo.<br><br>Se recaudo un total de $ <b>");
 		sbBody.append(String.format("%.2f", lista.getMontoRecaudado()));
-		sbBody.append("</b>, esperamos que lo disfrutes.<br><br>Participaron del regalo:<br>");
+		sbBody.append("</b>, esperamos que lo disfrute.<br><br>Participaron del regalo:<br>");
 		for (Participante p: lista.getParticipantes())
 		{
 			if (p.getPagoRealizado())
