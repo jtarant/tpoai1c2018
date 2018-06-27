@@ -49,7 +49,7 @@ public class PoolConexiones
 		}
 	}
 	
-	public void getConfiguration()
+	private void getConfiguration()
 	{
 	    Properties propiedades;	  
 	    try 
@@ -63,7 +63,7 @@ public class PoolConexiones
 	       password = propiedades.getProperty("password");
 	       cantCon = Integer.parseInt(propiedades.getProperty("conexiones"));
 	     } 
-	    catch (Exception e) 
+	     catch (Exception e) 
 	     {
 				System.out.println("Mensaje Error: " + e.getMessage());
 	     }
